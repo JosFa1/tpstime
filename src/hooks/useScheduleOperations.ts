@@ -1,26 +1,24 @@
 import { useState, useCallback } from "react";
-
-interface ScheduleItem {
-  id?: number;
-  user_id: string;
-  period: number;
-  subject: string;
-}
+// Use shared API helper to keep network logic consistent
+import { apiFetch } from "../utils/api";
 
 interface UseScheduleOperationsReturn {
+  // Updates the subject for a specific period. Returns success state
   updateClassPeriod: (period: number, subject: string) => Promise<boolean>;
+  // Removes the class period entirely
   deleteClassPeriod: (period: number) => Promise<boolean>;
+  // Indicates whether a network request is currently running
   loading: boolean;
+  // Any error message from the last failed request
   error: string | null;
 }
 
 export function useScheduleOperations(
   onSuccess?: () => void
 ): UseScheduleOperationsReturn {
+  // Track loading and error state for UI feedback
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
   const updateClassPeriod = useCallback(
     async (period: number, subject: string): Promise<boolean> => {
@@ -35,27 +33,19 @@ export function useScheduleOperations(
       setError(null);
 
       try {
-        const response = await fetch(
-          `${API_URL}/schedule/${period}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ subject: subject.trim() }),
-          }
-        );
+        // Use helper to send PUT request to `/schedule/:period`
+        await apiFetch(`/schedule/${period}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ subject: subject.trim() }),
+        });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
         if (onSuccess) {
           onSuccess();
         }
-        
+
         return true;
       } catch (err) {
         const errorMessage =
@@ -67,7 +57,7 @@ export function useScheduleOperations(
         setLoading(false);
       }
     },
-    [API_URL, onSuccess]
+    [onSuccess]
   );
 
   const deleteClassPeriod = useCallback(
@@ -78,23 +68,15 @@ export function useScheduleOperations(
       setError(null);
 
       try {
-        const response = await fetch(
-          `${API_URL}/schedule/${period}`,
-          {
-            method: "DELETE",
-          }
-        );
+        // Issue DELETE request for the selected period
+        await apiFetch(`/schedule/${period}`, {
+          method: "DELETE",
+        });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
         if (onSuccess) {
           onSuccess();
         }
-        
+
         return true;
       } catch (err) {
         const errorMessage =
@@ -106,7 +88,7 @@ export function useScheduleOperations(
         setLoading(false);
       }
     },
-    [API_URL, onSuccess]
+    [onSuccess]
   );
 
   return {

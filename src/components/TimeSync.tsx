@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
+// Shared API utilities for contacting the backend
+import { apiFetch } from '../utils/api';
 
-var enableTimeSync = process.env.REACT_APP_ENABLE_TIMESYNC === 'true';
-
-enableTimeSync = true;
+// Environment variable gate to toggle server time synchronization
+const enableTimeSync = process.env.REACT_APP_ENABLE_TIMESYNC === 'true';
 
 const TimeSync: React.FC = () => {
+  // The time as reported (and corrected) from the server
   const [serverTime, setServerTime] = useState<string | null>(null);
+  // Estimated accuracy (± seconds) of the synchronization
   const [accuracy, setAccuracy] = useState<number | null>(null);
+  // Track whether the request is still pending
   const [loading, setLoading] = useState(true);
+  // Store any error message that occurs while fetching time
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,19 +25,25 @@ const TimeSync: React.FC = () => {
     const fetchServerTime = async () => {
       try {
         const t0 = performance.now();
-        const response = await fetch('http://tpstime.trinityprep.org:3001/api/time');
+        // Request current time from the backend server
+        const data = await apiFetch<{ serverTime: string }>(`/api/time`);
         const t1 = performance.now();
-        if (!response.ok) throw new Error('Failed to fetch time');
-        const data = await response.json();
         const rtt = (t1 - t0) / 1000; // in seconds
-        const estimatedServerTime = new Date(new Date(data.serverTime).getTime() + (rtt * 500));
+        // Estimate server time by adding half of the round-trip time
+        const estimatedServerTime = new Date(
+          new Date(data.serverTime).getTime() + rtt * 500
+        );
         setServerTime(estimatedServerTime.toLocaleString());
         setAccuracy(rtt / 2); // ± half the round-trip time
-        console.log(`[TimeSync] Sync successful. Accuracy: ±${(rtt/2).toFixed(3)} seconds.`);
+        console.log(
+          `[TimeSync] Sync successful. Accuracy: ±${(rtt / 2).toFixed(3)} seconds.`
+        );
       } catch (err: any) {
+        // On failure we log and fall back to the system clock
         setError(err.message);
         console.log('[TimeSync] Sync failed, using system clock.', err);
       } finally {
+        // Signal completion regardless of success or failure
         setLoading(false);
       }
     };
