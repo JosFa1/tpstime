@@ -14,31 +14,31 @@ const GrilleMenu: React.FC = () => {
             {/* Monday Box */}
             <div className="border-2 border-accent rounded-lg p-4">
               <h2 className="text-xl font-semibold text-center mb-2">Monday</h2>
-              <p className="text-center">option1 | option2 | option3 | option4 | option5</p>
+              <p className="text-center">Spaghetti & Meatballs | Broccoli w/ Garlic & Lemon | Garlic Bread Stick | Grilled Chicken Breast | Regular Fries</p>
             </div>
 
             {/* Tuesday Box */}
             <div className="border-2 border-accent rounded-lg p-4">
               <h2 className="text-xl font-semibold text-center mb-2">Tuesday</h2>
-              <p className="text-center">option1 | option2 | option3 | option4 | option5</p>
+              <p className="text-center">Chicken Soft & Barbacoa Beef Tacos | Taco Salad | Spanish Style Corn | Cilantro Lime Rice | Red Beans & Rice | Mexican Quinoa | Crinkle Cut Fries</p>
             </div>
 
             {/* Wednesday Box */}
             <div className="border-2 border-accent rounded-lg p-4">
               <h2 className="text-xl font-semibold text-center mb-2">Wednesday</h2>
-              <p className="text-center">option1 | option2 | option3 | option4 | option5</p>
+              <p className="text-center">Sweet & Sour Chicken | Vegetable Fried Rice | Vegetable Blend Mandarin Stir Fry | Vegetable Egg Rolls | Regular Fries</p>
             </div>
 
             {/* Thursday Box */}
             <div className="border-2 border-accent rounded-lg p-4">
               <h2 className="text-xl font-semibold text-center mb-2">Thursday</h2>
-              <p className="text-center">option1 | option2 | option3 | option4 | option5</p>
+              <p className="text-center">BBQ Chopped Chicken | Baked Mac & Cheese | Vegetable Blend California Normandy | Vegetarian Baked Beans | Regular Fries</p>
             </div>
 
             {/* Friday Box */}
             <div className="border-2 border-accent rounded-lg p-4">
               <h2 className="text-xl font-semibold text-center mb-2">Friday</h2>
-              <p className="text-center">option1 | option2 | option3 | option4 | option5</p>
+              <p className="text-center">Seared Balsamic Salmon Fillet | Tuscan Style Roasted Potatoes | Quinoa Pilaf | Greek Spinach | Tuscan Zucchini & Tomatoes | Waffle Fries</p>
             </div>
 
           </div>
