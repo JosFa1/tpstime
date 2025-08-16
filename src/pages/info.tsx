@@ -31,8 +31,8 @@ const BackButton: React.FC = () => {
 const Info: React.FC = () => {
   const [showPopup, setShowPopup] = React.useState<null | '1.0' | '2.0'>(null);
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-text">
-      <div className="pt max-w-2xl w-full">
+    <div className="min-h-screen flex bg-background text-text">
+      <div className="pt-2 max-w-2xl w-full mx-auto">
         <h1 className="text-2xl font-bold mb-4">Project Information</h1>
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Team</h2>
@@ -46,10 +46,11 @@ const Info: React.FC = () => {
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">New Features (v- 2.0)</h2>
           <ul className="list-disc ml-6">
-            <li>Info page</li>
             <li>Improved navigation with hamburger menu</li>
+            <li>Info page</li>
+            <li>Settings page (theme switching)</li>
+            <li>Grille Menu page</li>
             <li>Added TimeSync with server </li>
-            <li>Added Theme switching </li>
           </ul>
         </section>
         <section className="mb-6">
@@ -90,10 +91,10 @@ const Info: React.FC = () => {
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
               <div className="bg-surface rounded-lg shadow-lg p-6 max-w-md w-full text-text relative">
                 <button className="absolute top-2 right-2 text-xl font-bold" onClick={() => setShowPopup(null)}>&times;</button>
-                <h3 className="text-xl font-bold mb-2">2.0 : 08/2025 - </h3>
+                <h3 className="text-xl font-bold mb-2">2.0 : 08/2025 - Present </h3>
                 <ul className="list-disc ml-6">
                   <li>Website ran with TPS server</li>
-                  <li>Hamburger icon with settings + info pages created</li>
+                  <li>Hamburger icon (w/ Settings, Info, and Grille pages)</li>
                   <li>Every users clock's synced with real time</li>
                 </ul>
               </div>

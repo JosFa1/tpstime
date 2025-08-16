@@ -119,6 +119,12 @@ const HamburgerMenu: React.FC = () => {
 							to="/info"
 							selected={location.pathname === '/info'}
 							label="Info"
+							navigate={navigate}
+						/>
+						<MenuButton
+							to="/grille"
+							selected={location.pathname === '/grille'}
+							label="Grille Menu"
 							rounded="rounded-b"
 							navigate={navigate}
 						/>

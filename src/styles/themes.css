@@ -87,13 +87,13 @@
 
 [data-theme="dark"], .dark {
   /* Dark theme colors (oklch) */
-  --color-primary: #FDB414;
-  --color-secondary: #FDB414;
-  --color-accent: #FDB414;
+  --color-primary: #cbcbcb;
+  --color-secondary: #cbcbcb;
+  --color-accent: #cbcbcb;
   --color-background: #181A20;
   --color-surface: #23272F;
-  --color-text: #FDB414;
-  --color-text-secondary: #B7B7B7;
+  --color-text: #cbcbcb;
+  --color-text-secondary: #cbcbcb;
   --color-border: #333A47;
   --color-error: #ff6464;
   --color-warning: #ffae00;

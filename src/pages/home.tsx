@@ -1,8 +1,8 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
 import TimeSync from "../components/TimeSync";
-import { aSchedule, bSchedule, cSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule } from "../types/msSchedule";
+import { aSchedule, bSchedule, cSchedule, sSchedule } from "../types/schedule";
+import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import Signature from "../components/signature";
 import { WeeklySchedule } from "../types/weekTypes";
@@ -35,12 +35,14 @@ function Home() {
   // US schedule
   const ADayUS = { title: "A", schedule: aSchedule };
   const BDayUS = { title: "B", schedule: bSchedule };
-  const CDAYUS = { title: "C", schedule: cSchedule };
+  const CDayUS = { title: "C", schedule: cSchedule };
+  const SDayUS = { title: "A", schedule: sSchedule };  // Using A as display title while keeping sSchedule
 
   // MS schedule
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
-  const CDAYMS = { title: "C", schedule: msCSchedule };
+  const CDayMS = { title: "C", schedule: msCSchedule };
+  const SDayMS = { title: "A", schedule: msSSchedule };  // Using A as display title while keeping msSSchedule
 
   const defaultClassNames: ClassName[] = [
     { name: "Period 1", period: 1 },
@@ -84,8 +86,8 @@ function Home() {
   }, [schedule, loading]);
 
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, ADayUS, BDayUS, CDAYUS, ADayUS]
-    : [ADayMS, ADayMS, BDayMS, CDAYMS, ADayMS];
+    ? [ADayUS, SDayUS, BDayUS, CDayUS, ADayUS]
+    : [SDayMS, ADayMS, BDayMS, CDayMS, ADayMS];
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col relative">
