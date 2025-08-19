@@ -2,6 +2,21 @@
 
 TPSTime is a React-based web application that helps students track their school schedule in real-time. The app displays the current class period, time remaining, and provides an overview of the daily schedule.
 
+## 🔐 Authentication (New!)
+
+TPSTime now supports secure Google OAuth authentication for Trinity Prep students:
+
+- **Secure Access**: Only users with @trinityprep.org Google accounts can access the schedule
+- **Automatic Protection**: All routes are protected when authentication is enabled
+- **Flexible Configuration**: Can run in public mode (no auth) or authenticated mode
+- **Easy Logout**: Logout button available in the hamburger menu
+
+### Authentication Modes
+- **Public Mode**: No authentication required (default when OAuth not configured)
+- **Authenticated Mode**: Requires Google OAuth with @trinityprep.org email addresses
+
+For setup instructions, see [AUTHENTICATION_SETUP.md](./AUTHENTICATION_SETUP.md)
+
 ## How It Works
 
 ### Schedule Display
