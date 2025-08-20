@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const ALLOWED_DOMAIN = 'gmail.com';
 
@@ -12,6 +13,7 @@ function parseHash(hash: string) {
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,12 +67,13 @@ const OAuthCallback: React.FC = () => {
         return;
       }
 
-      sessionStorage.setItem('tpstimeAuthed', 'true');
-      sessionStorage.setItem('tpstimeUser', JSON.stringify({ email: emailLocal, name: nameLocal, picture: pictureLocal }));
+      // Use AuthContext login method to properly set authentication state
+      login(emailLocal, nameLocal || emailLocal, pictureLocal || undefined);
+      
       window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, login]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-text p-4">

@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client"; // React 18 entry point
 import "./index.css";
 import "./styles/themes.css";
 
+// Import WebSocket error handler to prevent development server crashes
+import "./utils/websocketErrorHandler";
+
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 // ...existing code...
