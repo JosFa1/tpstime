@@ -28,15 +28,15 @@ module.exports = {
       },
       // Configure WebSocket URL to avoid connection issues
       webSocketURL: {
-        hostname: '0.0.0.0',
+        hostname: '172.16.100.110',
         pathname: '/ws',
-        port: '',
+        port: '3000',
         protocol: 'ws',
       },
     },
     
     // Host configuration
-    host: '0.0.0.0',
+    host: '172.16.100.110',
     allowedHosts: 'all',
     
     // Headers to prevent issues with proxies
