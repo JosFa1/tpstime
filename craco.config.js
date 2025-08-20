@@ -26,19 +26,19 @@ module.exports = {
         errors: true,
         warnings: false,
       },
-      // Configure WebSocket URL to avoid connection issues
+      // Configure WebSocket URL to avoid connection issues using environment variable
       webSocketURL: {
-        hostname: '172.16.100.110',
+        hostname: process.env.WDS_SOCKET_HOST,
         pathname: '/ws',
-        port: '3000',
+        port: process.env.WDS_SOCKET_PORT,
         protocol: 'ws',
       },
-    },
-    
-    // Host configuration
-    host: '172.16.100.110',
-    allowedHosts: 'all',
-    
+        },
+        
+        // Host configuration
+        host: process.env.WDS_SOCKET_HOST,
+        allowedHosts: 'all',
+        
     // Headers to prevent issues with proxies
     headers: {
       'Access-Control-Allow-Origin': '*',
