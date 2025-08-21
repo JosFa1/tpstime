@@ -5,7 +5,7 @@
  */
 
 // Base URL for the backend API. Falls back to localhost during development.
-export const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
+export const API_URL = process.env.REACT_APP_API_URL || "http://tpstime.trinityprep.org:3001";
 
 /**
  * Helper around the native fetch API that automatically prefixes the

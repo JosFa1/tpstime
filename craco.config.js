@@ -1,43 +1,34 @@
 module.exports = {
   devServer: {
-    // Disable WebSocket compression to prevent RSV1 errors
-    compress: false,
-    
-    // Configure WebSocket settings
+    // Use sockjs instead of ws to avoid RSV1 compression issues
     webSocketServer: {
-      options: {
-        // Disable compression on WebSocket frames
-        perMessageDeflate: false,
-        // Set maximum payload size to prevent frame issues
-        maxPayload: 1024 * 1024 * 10, // 10MB
-      }
+      type: 'sockjs',
     },
     
-    // Additional stability configurations
+    // Enable hot reloading but with safer settings
     hot: true,
-    liveReload: false,
+    liveReload: false, // Disable live reload when hot is enabled
     
-    // Client configuration for better error handling
+    // Disable compression which can cause WebSocket issues
+    compress: false,
+    
+    // Client configuration
     client: {
-      // Reduce reconnection attempts
+      // Use sockjs transport which is more stable
+      webSocketTransport: 'sockjs',
+      // Allow some reconnection attempts but not too many
       reconnect: 3,
-      // Show overlay only for errors, not warnings
+      // Show overlay only for errors
       overlay: {
         errors: true,
         warnings: false,
       },
-      // Configure WebSocket URL to avoid connection issues using environment variable
-      webSocketURL: {
-        hostname: process.env.WDS_SOCKET_HOST,
-        pathname: '/ws',
-        port: process.env.WDS_SOCKET_PORT,
-        protocol: 'ws',
-      },
-        },
+    },
         
-        // Host configuration
-        host: process.env.WDS_SOCKET_HOST,
-        allowedHosts: 'all',
+    // Host configuration - simplified
+    host: 'localhost',
+    port: 3000,
+    allowedHosts: 'all',
         
     // Headers to prevent issues with proxies
     headers: {
