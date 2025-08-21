@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
             Trinity Prep Schedule
           </h2>
           <p className="mt-2 text-sm text-text opacity-80">
-            Please sign in with your Gmail Google account
+            Please sign in with your Trinity Prep Google account
           </p>
         </div>
         <div className="mt-8 space-y-6">
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
                   Sign in to access your schedule
                 </h3>
                 <p className="text-sm text-text opacity-70 mb-4">
-                  You must use your @gmail.com Google account
+                  You must use your @trinityprep.org Google account
                 </p>
               </div>
               <div className="flex justify-center">
@@ -43,7 +43,7 @@ const LoginPage: React.FC = () => {
                 </a>
               </div>
               <div className="text-xs text-text opacity-60 text-center mt-4">
-                Only @gmail.com accounts are allowed
+                Only @trinityprep.org accounts are allowed
               </div>
             </div>
           </div>

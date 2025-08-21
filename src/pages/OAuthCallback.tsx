@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const ALLOWED_DOMAIN = 'gmail.com';
+const ALLOWED_DOMAIN = 'trinityprep.org';
 
 function parseHash(hash: string) {
   const params = new URLSearchParams(hash.replace(/^#/, ''));
@@ -63,7 +63,7 @@ const OAuthCallback: React.FC = () => {
       }
 
       if (!emailLocal.endsWith(`@${ALLOWED_DOMAIN}`)) {
-        setError('Only @gmail.com accounts are allowed.');
+        setError('Only @trinityprep.org accounts are allowed.');
         return;
       }
 
@@ -82,7 +82,7 @@ const OAuthCallback: React.FC = () => {
         {error ? (
           <div>
             <p className="text-red-600 mb-2">{error}</p>
-            <p>If you used a non-Gmail account, please sign out and try again with your @gmail.com account.</p>
+            <p>If you used a non-Trinity Prep account, please sign out and try again with your @trinityprep.org account.</p>
           </div>
         ) : (
           <p>Completing sign-in. You will be redirected shortly.</p>

@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
       const payload = parseJwt(response.credential);
       
       // Get the required email domain from environment variables, default to @trinityprep.org
-      const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@gmail.com';
+      const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
       console.log(requiredDomain)
       
       // Check if email is from the required domain
@@ -79,8 +79,8 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Get the required email domain for display, default to @gmail.com
-  const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@gmail.com';
+  // Get the required email domain for display, default to @trinityprep.org
+  const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
