@@ -1,7 +1,7 @@
 import React from 'react';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-const GOOGLE_REDIRECT_URI = process.env.REACT_APP_GOOGLE_OAUTH_REDIRECT_URI || 'localhost:3000';
+const GOOGLE_REDIRECT_URI = process.env.REACT_APP_GOOGLE_OAUTH_REDIRECT_URI || 'http://www.tpstime.trinityprep.org/auth/callback';
 const GOOGLE_SCOPE = 'openid email profile';
 const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}&response_type=token&scope=${encodeURIComponent(GOOGLE_SCOPE)}&prompt=select_account`;
 
