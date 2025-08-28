@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import TokenCache from '../utils/TokenCache';
+import GoogleAuthService from '../services/GoogleAuthService';
 
 interface User {
   email: string;
@@ -33,13 +35,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       if (!isAuthRequired) {
         setIsAuthenticated(true);
         setIsLoading(false);
         return;
       }
 
+      // First check for cached OAuth tokens
+      const cachedUser = TokenCache.getCachedUser();
+      if (cachedUser && TokenCache.isValidCachedToken()) {
+        setUser(cachedUser);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // Fallback to sessionStorage for backward compatibility
       const authState = sessionStorage.getItem('tpstimeAuthed');
       const userInfo = sessionStorage.getItem('tpstimeUser');
       
@@ -64,6 +76,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const userData = { email, name, picture };
     setUser(userData);
     setIsAuthenticated(true);
+    
+    // Store in both sessionStorage (for backward compatibility) and token cache
     sessionStorage.setItem('tpstimeAuthed', 'true');
     sessionStorage.setItem('tpstimeUser', JSON.stringify(userData));
   };
@@ -71,8 +85,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    
+    // Clear both sessionStorage and token cache
     sessionStorage.removeItem('tpstimeAuthed');
     sessionStorage.removeItem('tpstimeUser');
+    
+    // Clear cached OAuth tokens
+    TokenCache.clearTokens();
+    
+    // Sign out from Google service
+    GoogleAuthService.getInstance().signOut();
   };
 
   return (

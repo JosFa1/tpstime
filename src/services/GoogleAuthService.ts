@@ -1,4 +1,5 @@
 // Google OAuth Service using the Google Identity Services API
+import TokenCache from '../utils/TokenCache';
 
 interface GoogleUser {
   email: string;
@@ -10,6 +11,7 @@ interface GoogleAuthResponse {
   success: boolean;
   user?: GoogleUser;
   error?: string;
+  fromCache?: boolean;
 }
 
 class GoogleAuthService {
@@ -47,6 +49,18 @@ class GoogleAuthService {
 
   async signIn(): Promise<GoogleAuthResponse> {
     try {
+      // First check if we have a valid cached token
+      if (TokenCache.isValidCachedToken()) {
+        const cachedUser = TokenCache.getCachedUser();
+        if (cachedUser) {
+          return {
+            success: true,
+            user: cachedUser,
+            fromCache: true
+          };
+        }
+      }
+
       await this.initialize();
 
       const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -76,13 +90,26 @@ class GoogleAuthService {
                 return;
               }
 
+              const user = {
+                email: payload.email,
+                name: payload.name,
+                picture: payload.picture
+              };
+
+              // Cache the token for future use
+              // Note: Google Identity Services provides JWT tokens, not traditional OAuth tokens
+              // We'll store the user info and treat the JWT as our "access token"
+              const expiresIn = payload.exp - payload.iat; // JWT expiration time
+              TokenCache.storeTokens(
+                response.credential,
+                expiresIn,
+                user
+              );
+
               resolve({
                 success: true,
-                user: {
-                  email: payload.email,
-                  name: payload.name,
-                  picture: payload.picture
-                }
+                user,
+                fromCache: false
               });
             } catch (error) {
               resolve({ 
@@ -100,6 +127,37 @@ class GoogleAuthService {
         success: false, 
         error: error instanceof Error ? error.message : 'Authentication failed' 
       };
+    }
+  }
+
+  /**
+   * Check if user is currently authenticated (from cache or session)
+   */
+  isAuthenticated(): boolean {
+    return TokenCache.isValidCachedToken();
+  }
+
+  /**
+   * Get current user from cache
+   */
+  getCurrentUser(): GoogleUser | null {
+    return TokenCache.getCachedUser();
+  }
+
+  /**
+   * Sign out and clear all cached tokens
+   */
+  signOut(): void {
+    TokenCache.clearTokens();
+    
+    // Also clear any Google session
+    if (window.google?.accounts?.id) {
+      try {
+        // Cancel any ongoing auth prompts
+        (window.google.accounts.id as any).cancel?.();
+      } catch (error) {
+        console.warn('Failed to cancel Google auth prompt:', error);
+      }
     }
   }
 
@@ -130,21 +188,6 @@ class GoogleAuthService {
         .join('')
     );
     return JSON.parse(jsonPayload);
-  }
-}
-
-// Extend the Window interface to include google
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: any) => void;
-          prompt: () => void;
-          renderButton: (element: Element | null, config: any) => void;
-        };
-      };
-    };
   }
 }
 

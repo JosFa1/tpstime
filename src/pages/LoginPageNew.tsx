@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import GoogleAuthService from '../services/GoogleAuthService';
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -13,69 +15,41 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleGoogleResponse = useCallback((response: any) => {
-    try {
-      // Decode the JWT token
-      const payload = parseJwt(response.credential);
+  useEffect(() => {
+    // Check for cached authentication on component mount
+    const checkCachedAuth = async () => {
+      const googleAuthService = GoogleAuthService.getInstance();
       
-      // Get the required email domain from environment variables, default to @trinityprep.org
-      const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
-      console.log(requiredDomain)
-      
-      // Check if email is from the required domain
-      if (!payload.email.endsWith(requiredDomain)) {
-        setError(`Please use your ${requiredDomain} Google account`);
-        return;
+      if (googleAuthService.isAuthenticated()) {
+        const cachedUser = googleAuthService.getCurrentUser();
+        if (cachedUser) {
+          login(cachedUser.email, cachedUser.name, cachedUser.picture);
+          navigate('/');
+        }
       }
+    };
 
-      login(payload.email, payload.name, payload.picture);
-      navigate('/');
-    } catch (error) {
-      setError('Failed to process authentication response');
-    }
+    checkCachedAuth();
   }, [login, navigate]);
 
-  useEffect(() => {
-    const loadGoogleScript = () => {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeGoogleAuth;
-      document.head.appendChild(script);
-    };
-
-    const initializeGoogleAuth = () => {
-      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-      if (!clientId || !window.google) return;
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleResponse,
-      });
-    };
-
-    loadGoogleScript();
-  }, [handleGoogleResponse]);
-
-  const parseJwt = (token: string): any => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  };
-
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
     setError('');
-    if (window.google) {
-      window.google.accounts.id.prompt();
-    } else {
-      setError('Google authentication is not available');
+    
+    try {
+      const googleAuthService = GoogleAuthService.getInstance();
+      const result = await googleAuthService.signIn();
+      
+      if (result.success && result.user) {
+        login(result.user.email, result.user.name, result.user.picture);
+        navigate('/');
+      } else {
+        setError(result.error || 'Authentication failed');
+      }
+    } catch (error) {
+      setError('Failed to authenticate with Google');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,15 +89,25 @@ const LoginPage: React.FC = () => {
               <div className="flex justify-center">
                 <button
                   onClick={handleGoogleSignIn}
-                  className="bg-primary hover:bg-primary/90 text-background font-semibold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                  disabled={isLoading}
+                  className="bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-background font-semibold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center space-x-2"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  <span>Sign in with Google</span>
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin"></div>
+                      <span>Signing in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                      <span>Sign in with Google</span>
+                    </>
+                  )}
                 </button>
               </div>
               
@@ -137,20 +121,5 @@ const LoginPage: React.FC = () => {
     </div>
   );
 };
-
-// Extend the Window interface to include google
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: any) => void;
-          prompt: () => void;
-          renderButton: (element: Element | null, config: any) => void;
-        };
-      };
-    };
-  }
-}
 
 export default LoginPage;
