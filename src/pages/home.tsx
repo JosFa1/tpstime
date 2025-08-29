@@ -1,8 +1,8 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
 import TimeSync from "../components/TimeSync";
-import { aSchedule, bSchedule, cSchedule, sSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
+import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule } from "../types/schedule";
+import { msASchedule, msBSchedule, msCSchedule, msSSchedule, msSBSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import Signature from "../components/signature";
 import { WeeklySchedule } from "../types/weekTypes";
@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import React from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
+import { title } from "process";
 
 function Home() {
   const [scheduleType, setScheduleType] = React.useState<'US' | 'MS'>(() => {
@@ -37,12 +38,14 @@ function Home() {
   const BDayUS = { title: "B", schedule: bSchedule };
   const CDayUS = { title: "C", schedule: cSchedule };
   const SDayUS = { title: "A", schedule: sSchedule };  // Using A as display title while keeping sSchedule
-
   // MS schedule
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
   const CDayMS = { title: "C", schedule: msCSchedule };
   const SDayMS = { title: "A", schedule: msSSchedule };  // Using A as display title while keeping msSSchedule
+  const SBDayMS = { title: "B", schedule: msSBSchedule };  // MS b day with an assembly
+
+  const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
 
   const defaultClassNames: ClassName[] = [
     { name: "Period 1", period: 1 },
@@ -86,8 +89,8 @@ function Home() {
   }, [schedule, loading]);
 
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, SDayUS, BDayUS, CDayUS, ADayUS]
-    : [SDayMS, ADayMS, BDayMS, CDayMS, ADayMS];
+    ? [NSDay, SDayUS, BDayUS, CDayUS, ADayUS]
+    : [NSDay, ADayMS, SBDayMS, CDayMS, ADayMS];
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col relative">

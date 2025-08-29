@@ -37,6 +37,7 @@ export const cSchedule = [
   new ClassPeriod("Study Period", "14:45", "15:15"),
 ];
 
+
 export const sSchedule = [
   new ClassPeriod("Advisory", "08:00", "08:05"),
   new ClassPeriod("1st Period", "08:10", "08:55"),
@@ -51,3 +52,6 @@ export const sSchedule = [
   new ClassPeriod("Study Period", "15:00", "15:20"),
 ];
 
+export const NSchedule = [
+  new ClassPeriod("No School Today / Labor Day", "08:00", "15:20"),
+];

@@ -27,6 +27,17 @@ export const msBSchedule: ClassPeriod[] = [
   new ClassPeriod("Study Period", "15:00", "15:20"),
 ];
 
+export const msSBSchedule: ClassPeriod[] = [
+  new ClassPeriod("Advisory", "08:00", "08:05"),
+  new ClassPeriod("1st Period", "08:10", "09:30"),
+  new ClassPeriod("Assembly", "09:35", "09:55"),
+  new ClassPeriod("3rd Period", "10:00", "11:20"),
+  new ClassPeriod("Lunch", "11:25", "12:05"),
+  new ClassPeriod("5th Period", "12:10", "13:30"),
+  new ClassPeriod("7th Period", "13:35", "14:55"),
+  new ClassPeriod("Study Period", "15:00", "15:20"),
+];
+
 export const msCSchedule: ClassPeriod[] = [
   new ClassPeriod("Advisory", "08:00", "08:05"),
   new ClassPeriod("2nd Period", "08:10", "09:30"),
