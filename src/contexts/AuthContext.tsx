@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import GoogleAuthService from '../services/GoogleAuthService';
 
 interface User {
   email: string;
@@ -41,18 +40,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // First check for cached OAuth token
-      const googleAuthService = GoogleAuthService.getInstance();
-      const cachedAuth = googleAuthService.getCachedAuth();
-      
-      if (cachedAuth?.success && cachedAuth.user) {
-        setUser(cachedAuth.user);
-        setIsAuthenticated(true);
-        setIsLoading(false);
-        return;
-      }
-
-      // Fallback to sessionStorage (for backward compatibility)
       const authState = sessionStorage.getItem('tpstimeAuthed');
       const userInfo = sessionStorage.getItem('tpstimeUser');
       
@@ -86,10 +73,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     sessionStorage.removeItem('tpstimeAuthed');
     sessionStorage.removeItem('tpstimeUser');
-    
-    // Also clear the OAuth token cache
-    const googleAuthService = GoogleAuthService.getInstance();
-    googleAuthService.signOut();
   };
 
   return (

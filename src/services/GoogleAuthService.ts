@@ -10,74 +10,17 @@ interface GoogleAuthResponse {
   success: boolean;
   user?: GoogleUser;
   error?: string;
-  token?: string;
-}
-
-interface CachedToken {
-  token: string;
-  expiresAt: number;
-  user: GoogleUser;
 }
 
 class GoogleAuthService {
   private static instance: GoogleAuthService;
   private isInitialized = false;
-  private readonly TOKEN_CACHE_KEY = 'tpstimeOAuthToken';
 
   static getInstance(): GoogleAuthService {
     if (!GoogleAuthService.instance) {
       GoogleAuthService.instance = new GoogleAuthService();
     }
     return GoogleAuthService.instance;
-  }
-
-  // Check if there's a valid cached token
-  getCachedAuth(): GoogleAuthResponse | null {
-    try {
-      const cached = localStorage.getItem(this.TOKEN_CACHE_KEY);
-      if (!cached) return null;
-
-      const cachedToken: CachedToken = JSON.parse(cached);
-      
-      // Check if token is expired (with 5 minute buffer)
-      if (Date.now() > (cachedToken.expiresAt - 5 * 60 * 1000)) {
-        this.clearCachedAuth();
-        return null;
-      }
-
-      return {
-        success: true,
-        user: cachedToken.user,
-        token: cachedToken.token
-      };
-    } catch (error) {
-      console.error('Error reading cached auth:', error);
-      this.clearCachedAuth();
-      return null;
-    }
-  }
-
-  // Save auth token to cache
-  private saveAuthToCache(token: string, user: GoogleUser): void {
-    try {
-      const payload = this.parseJwt(token);
-      const expiresAt = payload.exp * 1000; // Convert to milliseconds
-      
-      const cachedToken: CachedToken = {
-        token,
-        expiresAt,
-        user
-      };
-
-      localStorage.setItem(this.TOKEN_CACHE_KEY, JSON.stringify(cachedToken));
-    } catch (error) {
-      console.error('Error saving auth to cache:', error);
-    }
-  }
-
-  // Clear cached auth
-  clearCachedAuth(): void {
-    localStorage.removeItem(this.TOKEN_CACHE_KEY);
   }
 
   async initialize(): Promise<void> {
@@ -124,29 +67,22 @@ class GoogleAuthService {
               // Decode the JWT token to get user info
               const payload = this.parseJwt(response.credential);
               
-              // Check if email is from the required domain
-              const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
-              if (!payload.email.endsWith(requiredDomain)) {
+              // Check if email is from Trinity Prep
+              if (!payload.email.endsWith('@trinityprep.org')) {
                 resolve({ 
                   success: false, 
-                  error: `Please use your ${requiredDomain} Google account` 
+                  error: 'Please use your @trinityprep.org Google account' 
                 });
                 return;
               }
 
-              const user = {
-                email: payload.email,
-                name: payload.name,
-                picture: payload.picture
-              };
-
-              // Save token to cache
-              this.saveAuthToCache(response.credential, user);
-
               resolve({
                 success: true,
-                user,
-                token: response.credential
+                user: {
+                  email: payload.email,
+                  name: payload.name,
+                  picture: payload.picture
+                }
               });
             } catch (error) {
               resolve({ 
@@ -164,19 +100,6 @@ class GoogleAuthService {
         success: false, 
         error: error instanceof Error ? error.message : 'Authentication failed' 
       };
-    }
-  }
-
-  async signOut(): Promise<void> {
-    this.clearCachedAuth();
-    
-    // Also clear any Google session if available
-    if (window.google?.accounts?.id) {
-      try {
-        window.google.accounts.id.disableAutoSelect();
-      } catch (error) {
-        console.warn('Error disabling Google auto-select:', error);
-      }
     }
   }
 
@@ -219,7 +142,6 @@ declare global {
           initialize: (config: any) => void;
           prompt: () => void;
           renderButton: (element: Element | null, config: any) => void;
-          disableAutoSelect: () => void;
         };
       };
     };
