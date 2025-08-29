@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import GoogleAuthService from '../services/GoogleAuthService';
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -13,68 +14,19 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleGoogleResponse = useCallback((response: any) => {
-    try {
-      // Decode the JWT token
-      const payload = parseJwt(response.credential);
-      
-      // Get the required email domain from environment variables, default to @trinityprep.org
-      const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
-      console.log(requiredDomain)
-      
-      // Check if email is from the required domain
-      if (!payload.email.endsWith(requiredDomain)) {
-        setError(`Please use your ${requiredDomain} Google account`);
-        return;
-      }
-
-      login(payload.email, payload.name, payload.picture);
-      navigate('/');
-    } catch (error) {
-      setError('Failed to process authentication response');
-    }
-  }, [login, navigate]);
-
-  useEffect(() => {
-    const loadGoogleScript = () => {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeGoogleAuth;
-      document.head.appendChild(script);
-    };
-
-    const initializeGoogleAuth = () => {
-      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-      if (!clientId || !window.google) return;
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleResponse,
-      });
-    };
-
-    loadGoogleScript();
-  }, [handleGoogleResponse]);
-
-  const parseJwt = (token: string): any => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  };
-
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setError('');
-    if (window.google) {
-      window.google.accounts.id.prompt();
-    } else {
+    try {
+      const googleAuthService = GoogleAuthService.getInstance();
+      const result = await googleAuthService.signIn();
+      
+      if (result.success && result.user) {
+        login(result.user.email, result.user.name, result.user.picture);
+        navigate('/');
+      } else {
+        setError(result.error || 'Authentication failed');
+      }
+    } catch (error) {
       setError('Google authentication is not available');
     }
   };
@@ -137,20 +89,5 @@ const LoginPage: React.FC = () => {
     </div>
   );
 };
-
-// Extend the Window interface to include google
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: any) => void;
-          prompt: () => void;
-          renderButton: (element: Element | null, config: any) => void;
-        };
-      };
-    };
-  }
-}
 
 export default LoginPage;

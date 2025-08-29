@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Settings from "./pages/settings";
 import Info from "./pages/info";
 import GrilleMenu from "./pages/grilleMenu";
-import LoginPage from "./pages/LoginPage";
+import LoginPageNew from "./pages/LoginPageNew";
 import OAuthCallback from "./pages/OAuthCallback";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -19,7 +19,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPageNew />} />
           <Route path="/auth/callback" element={<OAuthCallback />} />
           <Route path="/" element={
             <ProtectedRoute>
