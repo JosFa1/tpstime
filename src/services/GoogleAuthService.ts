@@ -58,7 +58,7 @@ class GoogleAuthService {
   }
 
   // Save auth token to cache
-  saveAuthToCache(token: string, user: GoogleUser): void {
+  private saveAuthToCache(token: string, user: GoogleUser): void {
     try {
       const payload = this.parseJwt(token);
       const expiresAt = payload.exp * 1000; // Convert to milliseconds
@@ -157,48 +157,13 @@ class GoogleAuthService {
           }
         });
 
-        // Check if mobile device
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-          // For mobile, we'll render a button instead of using prompt()
-          // The button rendering will be handled by the calling component
-          resolve({ 
-            success: false, 
-            error: 'MOBILE_BUTTON_REQUIRED' 
-          });
-        } else {
-          // For desktop, use the prompt
-          window.google.accounts.id.prompt();
-        }
+        window.google.accounts.id.prompt();
       });
     } catch (error) {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Authentication failed' 
       };
-    }
-  }
-
-  // Initialize Google Auth and set up callback for mobile button
-  async initializeForMobile(callback: (response: any) => void): Promise<boolean> {
-    try {
-      await this.initialize();
-
-      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-      if (!clientId || !window.google) {
-        return false;
-      }
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: callback
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Failed to initialize Google Auth for mobile:', error);
-      return false;
     }
   }
 
