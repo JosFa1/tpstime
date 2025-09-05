@@ -40,16 +40,16 @@ export const cSchedule = [
 
 export const sSchedule = [
   new ClassPeriod("Advisory", "08:00", "08:05"),
-  new ClassPeriod("1st Period", "08:10", "08:55"),
-  new ClassPeriod("2nd Period", "09:00", "09:45"),
-  new ClassPeriod("Assembly", "09:50", "10:10"),
-  new ClassPeriod("3rd Period", "10:15", "11:00"),
-  new ClassPeriod("4th Period", "11:05", "11:50"),
-  new ClassPeriod("5th Period", "11:55", "12:40"),
-  new ClassPeriod("Lunch", "12:45", "13:20"),
-  new ClassPeriod("6th Period", "13:25", "14:10"),
-  new ClassPeriod("7th Period", "14:15", "15:00"),
-  new ClassPeriod("Study Period", "15:00", "15:20"),
+  new ClassPeriod("1st Period", "08:10", "08:50"),
+  new ClassPeriod("2nd Period", "08:55", "09:35"),
+  new ClassPeriod("Break", "09:40", "10:00"),
+  new ClassPeriod("3rd Period", "10:05", "10:45"),
+  new ClassPeriod("4th Period", "10:50", "11:30"),
+  new ClassPeriod("5th Period", "11:35", "12:10"),
+  new ClassPeriod("Lunch", "12:15", "12:55"),
+  new ClassPeriod("6th Period", "13:00", "13:40"),
+  new ClassPeriod("7th Period", "13:45", "14:25"),
+  new ClassPeriod("Pep Rally", "14:30", "14:55"),
 ];
 
 export const NSchedule = [

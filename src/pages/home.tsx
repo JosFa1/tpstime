@@ -89,8 +89,8 @@ function Home() {
   }, [schedule, loading]);
 
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [NSDay, SDayUS, BDayUS, CDayUS, ADayUS]
-    : [NSDay, ADayMS, SBDayMS, CDayMS, ADayMS];
+    ? [NSDay, SDayUS, BDayUS, CDayUS, SDayUS]
+    : [NSDay, ADayMS, SBDayMS, CDayMS, SDayMS];
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col relative">
