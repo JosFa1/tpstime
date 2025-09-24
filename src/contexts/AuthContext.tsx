@@ -26,11 +26,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if Google OAuth is configured
-  const isAuthRequired = Boolean(
-    process.env.REACT_APP_GOOGLE_CLIENT_ID && 
-    process.env.REACT_APP_GOOGLE_CLIENT_SECRET
-  );
+  // Determine whether authentication is required.
+  // Priority: explicit flag REACT_APP_ENABLE_GOOGLE_AUTH if set ("true"/"1"),
+  // otherwise fall back to whether client ID+secret are present.
+  const isAuthRequired = (() => {
+    const flag = process.env.REACT_APP_ENABLE_GOOGLE_AUTH;
+    if (typeof flag !== 'undefined') {
+      return flag === 'true' || flag === '1';
+    }
+    return Boolean(
+      process.env.REACT_APP_GOOGLE_CLIENT_ID &&
+      process.env.REACT_APP_GOOGLE_CLIENT_SECRET
+    );
+  })();
 
   useEffect(() => {
     const checkAuth = () => {
