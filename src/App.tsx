@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Settings from "./pages/settings";
 import Info from "./pages/info";
 import GrilleMenu from "./pages/grilleMenu";
+import Houses from "./pages/houses";
 import LoginPage from "./pages/LoginPage";
 import OAuthCallback from "./pages/OAuthCallback";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -29,6 +30,11 @@ function App() {
           <Route path="/settings" element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          } />
+          <Route path="/houses" element={
+            <ProtectedRoute>
+              <Houses />
             </ProtectedRoute>
           } />
           <Route path="/info" element={

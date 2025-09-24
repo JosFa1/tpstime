@@ -27,7 +27,7 @@ module.exports = {
         
     // Host configuration - simplified
     host: '0.0.0.0',
-    port: 80,
+    port: 3000,
     allowedHosts: 'all',
         
     // Headers to prevent issues with proxies
