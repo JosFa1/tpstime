@@ -47,9 +47,8 @@ const Info: React.FC = () => {
           <h2 className="text-xl font-semibold mb-2">New Features (v- 2.0)</h2>
           <ul className="list-disc ml-6">
             <li>Improved navigation with hamburger menu</li>
-            <li>Info page</li>
-            <li>Settings page (theme switching)</li>
-            <li>Grille Menu page</li>
+            <li>Added Google Authentication</li>
+            <li>Settings, Info, Grille Menu, and House Pages</li>
             <li>Added TimeSync with server </li>
           </ul>
         </section>
@@ -94,7 +93,8 @@ const Info: React.FC = () => {
                 <h3 className="text-xl font-bold mb-2">2.0 : 08/2025 - Present </h3>
                 <ul className="list-disc ml-6">
                   <li>Website ran with TPS server</li>
-                  <li>Hamburger icon (w/ Settings, Info, and Grille pages)</li>
+                  <li>Google oAuth Implemented</li>
+                  <li>Hamburger icon (w/ Settings, House, Info, and Grille pages)</li>
                   <li>Every users clock's synced with real time</li>
                 </ul>
               </div>
