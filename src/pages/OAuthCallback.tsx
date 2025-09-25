@@ -1,92 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
-const ALLOWED_DOMAIN = 'trinityprep.org';
-
-function parseHash(hash: string) {
-  const params = new URLSearchParams(hash.replace(/^#/, ''));
-  const access_token = params.get('access_token');
-  const id_token = params.get('id_token');
-  return { access_token, id_token };
-}
+const enableServerAccount = process.env.REACT_APP_ENABLE_SERVER_ACCOUNT === 'true';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const { access_token, id_token } = parseHash(window.location.hash);
-    const token = access_token || id_token;
-    if (!token) {
-      setError('No token returned from Google.');
-      return;
-    }
-
-    let email: string | null = null;
-    let name: string | null = null;
-    let picture: string | null = null;
-    if (id_token) {
-      try {
-        const payload = id_token.split('.')[1];
-        const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-        email = decoded.email || null;
-        name = decoded.name || null;
-        picture = decoded.picture || null;
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    if (!email && access_token) {
-      fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          email = data.email;
-          name = data.name;
-          picture = data.picture;
-          finalize(email, name, picture);
-        })
-        .catch(() => finalize(null, null, null));
-      return;
-    }
-
-    finalize(email, name, picture);
-
-    function finalize(emailLocal: string | null, nameLocal: string | null, pictureLocal: string | null) {
-      if (!emailLocal) {
-        setError('Could not determine account email from Google response.');
-        return;
-      }
-
-      if (!emailLocal.endsWith(`@${ALLOWED_DOMAIN}`)) {
-        setError('Only @trinityprep.org accounts are allowed.');
-        return;
-      }
-
-      // Use AuthContext login method to properly set authentication state
-      login(emailLocal, nameLocal || emailLocal, pictureLocal || undefined);
-      
-      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    if (!enableServerAccount) {
+      console.log('[OAuth] Server account disabled, redirecting to home');
       navigate('/');
+      return;
     }
-  }, [navigate, login]);
+
+    const handleOAuthCallback = async () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const idToken = params.get('id_token');
+
+      if (!idToken) {
+        console.error('[OAuth] ID token not found in URL');
+        navigate('/');
+        return;
+      }
+
+      try {
+        const data = await apiFetch('/api/authenticate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idToken }),
+        });
+
+        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('accessToken', idToken);
+        console.log('[OAuth] Authentication successful');
+        navigate('/');
+      } catch (error) {
+        console.error('[OAuth] Authentication failed:', error);
+        navigate('/');
+      }
+    };
+
+    handleOAuthCallback();
+  }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-text p-4">
-      <div className="max-w-lg w-full border-2 border-accent rounded-lg p-6 bg-background">
-        <h2 className="text-xl font-bold mb-2">Signing you in…</h2>
-        {error ? (
-          <div>
-            <p className="text-red-600 mb-2">{error}</p>
-            <p>If you used a non-Trinity Prep account, please sign out and try again with your @trinityprep.org account.</p>
-          </div>
-        ) : (
-          <p>Completing sign-in. You will be redirected shortly.</p>
-        )}
+    <div className="text-text bg-background min-h-screen w-full flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-xl mb-4">Authenticating...</div>
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
       </div>
     </div>
   );

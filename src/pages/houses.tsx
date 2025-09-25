@@ -2,6 +2,14 @@ import React, { useMemo, useState } from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
 
+// Import house logos
+import house1Logo from "../assets/HouseLogos/Eagle.png";
+import house2Logo from "../assets/HouseLogos/Lion.png";
+import house3Logo from "../assets/HouseLogos/Manatee.png";
+import house4Logo from "../assets/HouseLogos/Otter.png";
+import house5Logo from "../assets/HouseLogos/Peacock.png";
+import house6Logo from "../assets/HouseLogos/Snake.png";
+
 type House = {
   id: string;
   name: string;
@@ -9,16 +17,26 @@ type House = {
 };
 
 const initialHouses: House[] = [
-  { id: "house1", name: "House 1", score: 120 },
-  { id: "house2", name: "House 2", score: 95 },
-  { id: "house3", name: "House 3", score: 150 },
-  { id: "house4", name: "House 4", score: 80 },
-  { id: "house5", name: "House 5", score: 110 },
-  { id: "house6", name: "House 6", score: 60 },
+  { id: "house1", name: "Hay", score: 0 },
+  { id: "house2", name: "Maughan", score: 0 },
+  { id: "house3", name: "Lawson", score: 0 },
+  { id: "house4", name: "St. John", score: 0 },
+  { id: "house5", name: "Ellis", score: 0 },
+  { id: "house6", name: "Brokaw", score: 0 },
 ];
 
 const Houses: React.FC = () => {
   const [houses, setHouses] = useState<House[]>(initialHouses);
+
+  // Logo mapping
+  const houseLogos: Record<string, string> = {
+    house1: house1Logo,
+    house2: house2Logo,
+    house3: house3Logo,
+    house4: house4Logo,
+    house5: house5Logo,
+    house6: house6Logo,
+  };
 
   // Sorted copy by descending score (highest first)
   const ranked = useMemo(() => {
@@ -42,7 +60,14 @@ const Houses: React.FC = () => {
           <div className="grid grid-cols-1 gap-2">
             {ranked.map((house, idx) => (
               <div key={house.id} className="border-2 rounded-lg px-3 py-2 flex items-center justify-between">
-                <h2 className="text-md font-medium">#{idx + 1} — {house.name}</h2>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={houseLogos[house.id]} 
+                    alt={`${house.name} logo`}
+                    className="w-8 h-8 object-contain"
+                  />
+                  <h2 className="text-md font-medium">#{idx + 1} — {house.name}</h2>
+                </div>
                 <div className="text-lg font-bold">{house.score}</div>
               </div>
             ))}
