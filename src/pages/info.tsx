@@ -1,32 +1,6 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
-
-const BackButton: React.FC = () => {
-  const navigate = useNavigate();
-  return (
-    <button
-      onClick={() => navigate("/")}
-      className="p-2 hover:bg-accent rounded-full transition-colors bg-surface border border-accent"
-      aria-label="Back to Home"
-    >
-      <svg
-        className="w-6 h-6 text-gray-600 dark:text-gray-300"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-    </button>
-  );
-};
 
 const Info: React.FC = () => {
   const [showPopup, setShowPopup] = React.useState<null | '1.0' | '2.0'>(null);

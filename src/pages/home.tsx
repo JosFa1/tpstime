@@ -2,27 +2,23 @@ import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
 import TimeSync from "../components/TimeSync";
 import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule, msSSchedule, msSBSchedule } from "../types/msSchedule";
+import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
-import Signature from "../components/signature";
 import { WeeklySchedule } from "../types/weekTypes";
 import { getTodayIndex, mapScheduleWithClassNames } from "../utils/utils";
 import Schedule from "../components/schedule";
-import { useNavigate } from "react-router-dom";
 import { ClassName } from "../types/className";
 import { useSchedule } from "../hooks/useSchedule";
 import { useMemo } from "react";
 import React from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
-import { title } from "process";
 
 function Home() {
   const [scheduleType, setScheduleType] = React.useState<'US' | 'MS'>(() => {
     const saved = localStorage.getItem('scheduleType');
     return saved === 'MS' ? 'MS' : 'US';
   });
-  const navigate = useNavigate();
   const { schedule, loading } = useSchedule();
 
   React.useEffect(() => {
@@ -43,11 +39,10 @@ function Home() {
   const BDayMS = { title: "B", schedule: msBSchedule };
   const CDayMS = { title: "C", schedule: msCSchedule };
   const SDayMS = { title: "A", schedule: msSSchedule };  // Using A as display title while keeping msSSchedule
-  const SBDayMS = { title: "B", schedule: msSBSchedule };  // MS b day with an assembly
 
   const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
 
-  const defaultClassNames: ClassName[] = [
+  const defaultClassNames: ClassName[] = useMemo(() => [
     { name: "Period 1", period: 1 },
     { name: "Period 2", period: 2 },
     { name: "Period 3", period: 3 },
@@ -55,7 +50,7 @@ function Home() {
     { name: "Period 5", period: 5 },
     { name: "Period 6", period: 6 },
     { name: "Period 7", period: 7 },
-  ];
+  ], []);
 
   const classNames: ClassName[] = useMemo(() => {
     if (
@@ -86,7 +81,7 @@ function Home() {
       name: periodMap.get(defaultClass.period!) || defaultClass.name,
       period: defaultClass.period,
     }));
-  }, [schedule, loading]);
+  }, [schedule, loading, defaultClassNames]);
 
   const thisWeek: WeeklySchedule = scheduleType === 'US'
     ? [NSDay, ADayUS, BDayUS, CDayUS, SDayUS]

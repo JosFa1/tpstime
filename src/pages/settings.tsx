@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import LogButton from "../components/logButton";
 import HamburgerMenu from "../components/HamburgerMenu";
 import ScheduleEditor from "../components/ScheduleEditor";
@@ -9,7 +8,6 @@ const enableYourSchedule = process.env.REACT_APP_ENABLE_YOUR_SCHEDULE === 'true'
 const enableServerAccount = process.env.REACT_APP_ENABLE_SERVER_ACCOUNT === 'true';
 
 function Settings() {
-  const navigate = useNavigate();
   
   // Get user data from localStorage if server accounts are enabled
   const user = enableServerAccount ? 

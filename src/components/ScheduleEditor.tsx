@@ -60,7 +60,7 @@ const ScheduleEditor: React.FC = () => {
       ...defaultPeriod,
       subject: periodMap.get(defaultPeriod.period) || defaultPeriod.subject,
     }));
-  }, [schedule]);
+  }, [schedule, defaultPeriods]);
 
   const handleEditClick = (period: number, currentSubject: string) => {
     if (!isAuthenticated) return;

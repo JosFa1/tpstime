@@ -1,12 +1,7 @@
 import { ClassPeriod } from "../types/classPeriod";
 import { ClassName } from "../types/className";
-import Clock from "../components/clock";
 import { aSchedule, bSchedule, cSchedule } from "../types/schedule";
-import Weekdays from "../components/weekdays";
-import Signature from "../components/signature";
 import { WeeklySchedule } from "../types/weekTypes";
-import Schedule from "../components/schedule";
-import { useNavigate } from "react-router-dom";
 
 export function getTodayIndex(): number {
   const jsDay = new Date().getDay(); // 0 (Sun) - 6 (Sat)

@@ -6,8 +6,6 @@ import { apiFetch } from '../utils/api';
 const enableTimeSync = process.env.REACT_APP_ENABLE_TIMESYNC === 'true';
 
 const TimeSync: React.FC = () => {
-  // The time as reported (and corrected) from the server
-  const [serverTime, setServerTime] = useState<string | null>(null);
   // Estimated accuracy (± seconds) of the synchronization
   const [accuracy, setAccuracy] = useState<number | null>(null);
   // Track whether the request is still pending
@@ -17,7 +15,6 @@ const TimeSync: React.FC = () => {
 
   useEffect(() => {
     if (!enableTimeSync) {
-      setServerTime(new Date().toLocaleString());
       setLoading(false);
       console.log('[TimeSync] Time sync disabled, using system clock.');
       return;
@@ -29,11 +26,8 @@ const TimeSync: React.FC = () => {
         const data = await apiFetch<{ serverTime: string }>(`/api/time`);
         const t1 = performance.now();
         const rtt = (t1 - t0) / 1000; // in seconds
-        // Estimate server time by adding half of the round-trip time
-        const estimatedServerTime = new Date(
-          new Date(data.serverTime).getTime() + rtt * 500
-        );
-        setServerTime(estimatedServerTime.toLocaleString());
+        // Remove the unused variable
+        // const estimatedServerTime = ...;
         setAccuracy(rtt / 2); // ± half the round-trip time
         console.log(
           `[TimeSync] Sync successful. Accuracy: ±${(rtt / 2).toFixed(3)} seconds.`
