@@ -47,11 +47,13 @@ const LoginPage: React.FC = () => {
 
     const initializeGoogleAuth = () => {
       const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+      const redirectUri = process.env.REACT_APP_GOOGLE_OAUTH_REDIRECT_URI || 'http://localhost:3000/auth/callback';
       if (!clientId || !window.google) return;
 
       window.google.accounts.id.initialize({
         client_id: clientId,
-        callback: handleGoogleResponse,
+        ux_mode: 'redirect',
+        redirect_uri: redirectUri, // Ensure redirect URI is set
       });
     };
 

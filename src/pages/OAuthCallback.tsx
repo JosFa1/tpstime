@@ -1,46 +1,55 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from '../utils/api';
-
-const enableServerAccount = process.env.REACT_APP_ENABLE_SERVER_ACCOUNT === 'true';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!enableServerAccount) {
-      console.log('[OAuth] Server account disabled, redirecting to home');
-      navigate('/');
-      return;
-    }
-
-    const handleOAuthCallback = async () => {
+    const handleOAuthCallback = () => {
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
       const idToken = params.get('id_token');
 
       if (!idToken) {
         console.error('[OAuth] ID token not found in URL');
-        navigate('/');
+        navigate('/login'); // Redirect to login page if token is missing
         return;
       }
 
       try {
-        const data = await apiFetch('/api/authenticate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ idToken }),
-        });
+        const payload = parseJwt(idToken);
+        const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
 
-        localStorage.setItem('user', JSON.stringify(data));
+        if (!payload.email || !payload.email.endsWith(requiredDomain)) {
+          console.error('[OAuth] Email domain not allowed:', payload.email);
+          navigate('/login'); // Redirect to login if email domain is invalid
+          return;
+        }
+
+        localStorage.setItem('user', JSON.stringify({ email: payload.email, name: payload.name }));
         localStorage.setItem('accessToken', idToken);
         console.log('[OAuth] Authentication successful');
-        navigate('/');
+        navigate('/'); // Redirect to home page after successful login
       } catch (error) {
         console.error('[OAuth] Authentication failed:', error);
-        navigate('/');
+        navigate('/login'); // Redirect to login on error
+      }
+    };
+
+    const parseJwt = (token: string): any => {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+      } catch (error) {
+        console.error('[OAuth] Failed to parse JWT:', error);
+        return null;
       }
     };
 
