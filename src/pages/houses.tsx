@@ -57,18 +57,20 @@ const Houses: React.FC = () => {
         <div className="pt-2 max-w-4xl w-full mx-auto px-4">
           <h1 className="text-2xl font-semibold text-center mb-6">House Rankings</h1>
 
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {ranked.map((house, idx) => (
               <div key={house.id} className="border-2 rounded-lg px-3 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img 
                     src={houseLogos[house.id]} 
                     alt={`${house.name} logo`}
-                    className="w-8 h-8 object-contain"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
                   />
-                  <h2 className="text-md font-medium">#{idx + 1} — {house.name}</h2>
+                  <h2 className="text-xl sm:text-2xl font-medium">#{idx + 1} — {house.name}</h2>
                 </div>
-                <div className="text-lg font-bold">{house.score}</div>
+                <div className="text-2xl sm:text-3xl font-bold">
+                  {house.score}
+                </div>
               </div>
             ))}
           </div>
