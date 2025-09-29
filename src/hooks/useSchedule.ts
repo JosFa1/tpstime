@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 // Pull in shared API helper so all network requests are centralized
 import { apiFetch } from "../utils/api";
 
-const enableServerAccount = process.env.REACT_APP_ENABLE_SERVER_ACCOUNT === 'true';
-
 interface UseScheduleReturn {
   schedule: any;
   loading: boolean;
@@ -24,11 +22,6 @@ export function useSchedule(): UseScheduleReturn {
    * Errors are caught and stored so the UI can react accordingly.
    */
   const fetchSchedule = async () => {
-    if (!enableServerAccount) {
-      console.log('[useSchedule] Server account disabled, skipping schedule fetch');
-      return;
-    }
-
     // Indicate that a request is in progress
     setLoading(true);
     setError(null);

@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSchedule } from "../hooks/useSchedule";
 import { useScheduleOperations } from "../hooks/useScheduleOperations";
 
-const enableServerAccount = process.env.REACT_APP_ENABLE_SERVER_ACCOUNT === 'true';
-
 interface ScheduleItem {
   id?: number;
   user_id?: string;
@@ -35,9 +33,8 @@ const ScheduleEditor: React.FC = () => {
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Check if user is authenticated for server accounts
-  const isAuthenticated = enableServerAccount ? 
-    Boolean(localStorage.getItem('user')) : true;
+  // Remove isAuthenticated logic
+  const isAuthenticated = true;
 
   const defaultPeriods = Array.from({ length: 7 }, (_, i) => ({
     period: i + 1,
@@ -45,7 +42,7 @@ const ScheduleEditor: React.FC = () => {
   }));
 
   const scheduleItems: ScheduleItem[] = React.useMemo(() => {
-    if (!enableServerAccount || !schedule || !Array.isArray(schedule) || schedule.length === 0) {
+    if (!schedule || !Array.isArray(schedule) || schedule.length === 0) {
       return defaultPeriods;
     }
 
@@ -63,12 +60,11 @@ const ScheduleEditor: React.FC = () => {
   }, [schedule, defaultPeriods]);
 
   const handleEditClick = (period: number, currentSubject: string) => {
-    if (!isAuthenticated) return;
     setEditing({ period, value: currentSubject });
   };
 
   const handleSave = async () => {
-    if (editing.period && editing.value.trim() && isAuthenticated) {
+    if (editing.period && editing.value.trim()) {
       const success = await updateClassPeriod(
         editing.period,
         editing.value.trim()
@@ -103,15 +99,6 @@ const ScheduleEditor: React.FC = () => {
       <div className="border border-primary p-4 rounded-lg bg-muted">
         <h2 className="text-lg font-semibold mb-2">Your Schedule</h2>
         <p className="text-secondary">Loading schedule...</p>
-      </div>
-    );
-  }
-
-  if (enableServerAccount && !isAuthenticated) {
-    return (
-      <div className="border border-primary p-4 rounded-lg bg-muted">
-        <h2 className="text-lg font-semibold mb-2">Your Schedule</h2>
-        <p className="text-secondary">Please log in to customize your schedule.</p>
       </div>
     );
   }
@@ -155,7 +142,7 @@ const ScheduleEditor: React.FC = () => {
                       }
                       onKeyDown={handleKeyPress}
                       className="flex-1 px-2 py-1 text-sm bg-background border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      disabled={updateLoading || !isAuthenticated}
+                      disabled={updateLoading}
                       placeholder="Enter class name..."
                     />
                   ) : (
@@ -165,8 +152,8 @@ const ScheduleEditor: React.FC = () => {
                         isDefaultName
                           ? "text-secondary hover:text-text hover:bg-accent"
                           : "text-text hover:bg-accent"
-                      } ${!isAuthenticated ? "cursor-not-allowed opacity-50" : ""}`}
-                      disabled={updateLoading || !isAuthenticated}
+                      }`}
+                      disabled={updateLoading}
                     >
                       {item.subject}
                     </button>
@@ -178,7 +165,7 @@ const ScheduleEditor: React.FC = () => {
                     <>
                       <button
                         onClick={handleSave}
-                        disabled={updateLoading || !editing.value.trim() || !isAuthenticated}
+                        disabled={updateLoading || !editing.value.trim()}
                         className="p-1 text-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Save"
                       >
@@ -220,11 +207,9 @@ const ScheduleEditor: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => handleEditClick(item.period, item.subject)}
-                      className={`p-1 text-secondary hover:text-text opacity-0 group-hover:opacity-100 transition-opacity ${
-                        !isAuthenticated ? "cursor-not-allowed" : ""
-                      }`}
-                      disabled={updateLoading || !isAuthenticated}
-                      title={isAuthenticated ? "Edit" : "Login required"}
+                      className="p-1 text-secondary hover:text-text opacity-0 group-hover:opacity-100 transition-opacity"
+                      disabled={updateLoading}
+                      title="Edit"
                     >
                       <svg
                         className="w-4 h-4"
@@ -254,12 +239,8 @@ const ScheduleEditor: React.FC = () => {
 
       <div className="mt-3 text-xs text-secondary">
         <p className="mt-1">
-          {isAuthenticated ? (
-            <>Click on any class name to edit it. Click the green checkmark to save
-            changes. Gray items show default names - click to customize them.</>
-          ) : (
-            <>Log in to customize your class names.</>
-          )}
+          Click on any class name to edit it. Click the green checkmark to save
+          changes. Gray items show default names - click to customize them.
         </p>
       </div>
     </div>

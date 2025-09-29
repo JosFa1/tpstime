@@ -67,7 +67,6 @@ const Info: React.FC = () => {
                 <h3 className="text-xl font-bold mb-2">2.0 : 08/2025 - Present </h3>
                 <ul className="list-disc ml-6">
                   <li>Website ran with TPS server</li>
-                  <li>Google oAuth Implemented</li>
                   <li>Hamburger icon (w/ Settings, House, Info, and Grille pages)</li>
                   <li>Every users clock's synced with real time</li>
                 </ul>

@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 type MenuButtonProps = {
 	to: string;
 	selected: boolean;
@@ -30,7 +29,6 @@ const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, n
 const HamburgerMenu: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { logout, isAuthRequired, isAuthenticated } = useAuth();
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [isMobile, setIsMobile] = useState(false);
@@ -134,25 +132,7 @@ const HamburgerMenu: React.FC = () => {
 							selected={location.pathname === '/info'}
 							label="Info"
 							navigate={navigate}
-						/>
-						{isAuthRequired && isAuthenticated && (
-							<button
-								className="w-full text-left px-4 py-2 font-semibold rounded-b border-t border-text/20 bg-red-600 text-white hover:font-bold"
-								onClick={() => {
-									logout();
-									navigate('/login');
-									setOpen(false);
-								}}
-								onMouseEnter={e => {
-									e.currentTarget.style.textDecoration = 'underline';
-								}}
-								onMouseLeave={e => {
-									e.currentTarget.style.textDecoration = '';
-								}}
-							>
-								Logout
-							</button>
-						)}
+							/>
 					</div>
 				</div>
 			)}

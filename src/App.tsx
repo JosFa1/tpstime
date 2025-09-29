@@ -6,10 +6,6 @@ import Settings from "./pages/settings";
 import Info from "./pages/info";
 import GrilleMenu from "./pages/grilleMenu";
 import Houses from "./pages/houses";
-import LoginPage from "./pages/LoginPage";
-import OAuthCallback from "./pages/OAuthCallback";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   useEffect(() => {
@@ -17,39 +13,15 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/callback" element={<OAuthCallback />} />
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings" element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          } />
-          <Route path="/houses" element={
-            <ProtectedRoute>
-              <Houses />
-            </ProtectedRoute>
-          } />
-          <Route path="/info" element={
-            <ProtectedRoute>
-              <Info />
-            </ProtectedRoute>
-          } />
-          <Route path="/grille" element={
-            <ProtectedRoute>
-              <GrilleMenu />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/houses" element={<Houses />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="/grille" element={<GrilleMenu />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

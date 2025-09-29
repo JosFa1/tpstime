@@ -1,60 +1,59 @@
-import React, { useEffect, useState } from 'react';
-// Shared API utilities for contacting the backend
+import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../utils/api';
 
-// Environment variable gate to toggle server time synchronization
-const enableTimeSync = process.env.REACT_APP_ENABLE_TIMESYNC === 'true';
-
 const TimeSync: React.FC = () => {
-  // Estimated accuracy (± seconds) of the synchronization
+  const [serverTime, setServerTime] = useState<Date | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
-  // Track whether the request is still pending
   const [loading, setLoading] = useState(true);
-  // Store any error message that occurs while fetching time
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!enableTimeSync) {
-      setLoading(false);
-      console.log('[TimeSync] Time sync disabled, using system clock.');
-      return;
-    }
     const fetchServerTime = async () => {
       try {
         const t0 = performance.now();
-        // Request current time from the backend server
-        const data = await apiFetch<{ serverTime: string }>(`/api/time`);
+        const data = await apiFetch<{ serverTime: string }>('/api/time');
         const t1 = performance.now();
         const rtt = (t1 - t0) / 1000; // in seconds
-        // Remove the unused variable
-        // const estimatedServerTime = ...;
         setAccuracy(rtt / 2); // ± half the round-trip time
+
+        const serverTimeDate = new Date(data.serverTime);
+        setServerTime(serverTimeDate);
         console.log(
           `[TimeSync] Sync successful. Accuracy: ±${(rtt / 2).toFixed(3)} seconds.`
         );
       } catch (err: any) {
-        // On failure we log and fall back to the system clock
         setError(err.message);
-        console.log('[TimeSync] Sync failed, using system clock.', err);
+        console.log('[TimeSync] Sync failed.', err);
       } finally {
-        // Signal completion regardless of success or failure
         setLoading(false);
       }
     };
+
     fetchServerTime();
   }, []);
 
+  useEffect(() => {
+    if (!serverTime) return;
+
+    const interval = setInterval(() => {
+      setServerTime((prevTime) => {
+        if (!prevTime) return null;
+        return new Date(prevTime.getTime() + 1000); // Increment by 1 second
+      });
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [serverTime]);
+
   if (loading) return <div className="text-xs text-gray-400">Loading server time...</div>;
-  if (!enableTimeSync) {
-    return null;
-  }
-  if (error) return (
-    <div className="text-xs text-gray-400">Using system clock.</div>
-  );
+  if (error) return <div className="text-xs text-gray-400">Error: {error}</div>;
+
   return (
     <div>
       {accuracy !== null && (
-        <div className="text-xs text-gray-400 mt-1">Accuracy of synchronization: &plusmn;{accuracy.toFixed(3)} seconds</div>
+        <div className="text-xs text-gray-400 mt-1">
+          Accuracy of synchronization: &plusmn;{accuracy.toFixed(3)} seconds
+        </div>
       )}
     </div>
   );
