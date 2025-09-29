@@ -19,11 +19,12 @@ type House = {
 const initialHouses: House[] = [
   { id: "house1", name: "Hay", score: 0 },
   { id: "house2", name: "Maughan", score: 0 },
-  { id: "house3", name: "Lawson", score: 0 },
+  { id: "house3", name: "Lawson", score: 0.1 },
   { id: "house4", name: "St. John", score: 0 },
   { id: "house5", name: "Ellis", score: 0 },
   { id: "house6", name: "Brokaw", score: 0 },
 ];
+
 
 const Houses: React.FC = () => {
   const [houses, setHouses] = useState<House[]>(initialHouses);
@@ -68,8 +69,8 @@ const Houses: React.FC = () => {
                   />
                   <h2 className="text-xl sm:text-2xl font-medium">#{idx + 1} — {house.name}</h2>
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold">
-                  {house.score}
+                <div className="text-2xl sm:text-3xl font-bold" title={`Raw: ${house.score}`}>
+                  {Math.round(house.score)}
                 </div>
               </div>
             ))}
