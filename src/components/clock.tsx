@@ -10,7 +10,6 @@ type ClockProps = {
 
 const Clock: React.FC<ClockProps> = ({ schedule }) => {
   const [status, setStatus] = useState(() => getScheduleStatus(schedule));
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [serverTimeOffset, setServerTimeOffset] = useState<number | null>(null);
 
   useEffect(() => {
@@ -34,13 +33,6 @@ const Clock: React.FC<ClockProps> = ({ schedule }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime((prevTime) => {
-        const now = new Date();
-        if (serverTimeOffset !== null) {
-          return new Date(now.getTime() + serverTimeOffset);
-        }
-        return now; // Fallback to device clock
-      });
       setStatus(getScheduleStatus(schedule));
     }, 1000);
 

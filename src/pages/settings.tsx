@@ -1,15 +1,9 @@
 import LogButton from "../components/logButton";
 import HamburgerMenu from "../components/HamburgerMenu";
-import ScheduleEditor from "../components/ScheduleEditor";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 import FooterNote from "../components/FooterNote";
 
-const enableYourSchedule = process.env.REACT_APP_ENABLE_YOUR_SCHEDULE === 'true';
-
 function Settings() {
-  const user = {};
-  const isAdmin = false;
-
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col relative">
       {/* Top bar: HamburgerMenu top right */}
@@ -27,8 +21,6 @@ function Settings() {
           {/* Theme selection always available */}
           <ThemeSwitcher />
           
-          {/* Conditionally show Your Schedule module */}
-          {enableYourSchedule && <ScheduleEditor />}
           
           <div className="flex justify-center">
             <LogButton />

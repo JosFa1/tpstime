@@ -27,7 +27,7 @@ const initialHouses: House[] = [
 
 
 const Houses: React.FC = () => {
-  const [houses, setHouses] = useState<House[]>(initialHouses);
+  const [houses] = useState<House[]>(initialHouses);
 
   // Logo mapping
   const houseLogos: Record<string, string> = {
@@ -43,10 +43,6 @@ const Houses: React.FC = () => {
   const ranked = useMemo(() => {
     return [...houses].sort((a, b) => b.score - a.score);
   }, [houses]);
-
-  const changeScore = (id: string, delta: number) => {
-    setHouses((prev) => prev.map(h => h.id === id ? { ...h, score: Math.max(0, h.score + delta) } : h));
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-text">
