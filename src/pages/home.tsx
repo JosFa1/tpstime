@@ -83,9 +83,10 @@ function Home() {
     }));
   }, [schedule, loading, defaultClassNames]);
 
+  // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [NSDay, ADayUS, BDayUS, CDayUS, SDayUS]
-    : [NSDay, ADayMS, BDayMS, CDayMS, SDayMS];
+    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
+    : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col relative">
