@@ -89,9 +89,9 @@ function Home() {
     : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
 
   return (
-    <div className="text-text bg-background min-h-screen w-full flex flex-col relative">
+    <div className="text-text bg-background min-h-screen w-full flex flex-col">
       {/* Top bar: HamburgerMenu and Weekdays on same row */}
-      <div className="w-full flex flex-row justify-between items-center pt-4 pb-2 px-2 sm:px-4">
+      <div className="w-full flex flex-row justify-between items-center pt-4 pb-2 px-2 sm:px-4 bg-background">
         <div className="flex flex-row items-center gap-2">
           <Weekdays
             weeklySchedule={thisWeek}
@@ -104,12 +104,12 @@ function Home() {
       </div>
       {/* Main content */}
       {getTodayIndex() === -1 ? (
-        <div className="text-secondary w-full min-h-[60vh] flex justify-center items-center text-xl sm:text-2xl align-middle">
+        <div className="text-secondary w-full min-h-[60vh] flex justify-center items-center text-xl sm:text-2xl">
           No schedule available for today.
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center justify-center w-full bg-background px-2 py-6 sm:p-8 min-h-[60vh] justify-center">
+          <div className="flex flex-col items-center justify-center w-full bg-background px-2 py-6 sm:p-8 min-h-[60vh]">
             <div className="flex flex-col items-center w-full max-w-2xl">
               <div className="w-full px-2 sm:px-4 mb-2">
                 <ClockDescription
@@ -131,7 +131,7 @@ function Home() {
               </div>
             </div>
           </div>
-          <div className="w-full px-2 sm:px-8 pt-0 mt-4 bg-background flex justify-center">
+          <div className="w-full px-2 sm:px-8 pt-0 mt-4 bg-background flex justify-center pb-4">
             <div className="w-full max-w-2xl">
               <Schedule
                 schedule={mapScheduleWithClassNames(
@@ -141,7 +141,6 @@ function Home() {
               />
             </div>
           </div>
-          {/* Removed extra bottom spacing and bar to fix white gap */}
         </>
       )}
     </div>

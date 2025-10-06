@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+
 type MenuButtonProps = {
 	to: string;
 	selected: boolean;
@@ -29,6 +31,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, n
 const HamburgerMenu: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { logout, user } = useAuth();
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [isMobile, setIsMobile] = useState(false);
@@ -67,6 +70,11 @@ const HamburgerMenu: React.FC = () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [open]);
+
+	const handleLogout = () => {
+		logout();
+		navigate('/login');
+	};
 
 	const hamburgerBtnBase = "flex flex-col justify-center items-center w-10 h-10 rounded-lg border-2 border-primary bg-background shadow-sm transition-colors duration-150";
 	const hamburgerBtnHover = "hover:bg-accent";
@@ -132,7 +140,13 @@ const HamburgerMenu: React.FC = () => {
 							selected={location.pathname === '/info'}
 							label="Info"
 							navigate={navigate}
-							/>
+						/>
+							<button
+							onClick={handleLogout}
+							className="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"
+						>
+							Logout
+						</button>
 					</div>
 				</div>
 			)}

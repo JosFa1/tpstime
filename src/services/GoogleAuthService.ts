@@ -54,6 +54,8 @@ class GoogleAuthService {
         return { success: false, error: 'Google Client ID not configured' };
       }
 
+      const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
+
       return new Promise((resolve) => {
         if (!window.google) {
           resolve({ success: false, error: 'Google Identity Services not loaded' });
@@ -67,11 +69,11 @@ class GoogleAuthService {
               // Decode the JWT token to get user info
               const payload = this.parseJwt(response.credential);
               
-              // Check if email is from Trinity Prep
-              if (!payload.email.endsWith('@trinityprep.org')) {
+              // Check if email ends with required domain from env
+              if (!payload.email.endsWith(requiredDomain)) {
                 resolve({ 
                   success: false, 
-                  error: 'Please use your @trinityprep.org Google account' 
+                  error: `Please use your ${requiredDomain} school account to sign in` 
                 });
                 return;
               }
