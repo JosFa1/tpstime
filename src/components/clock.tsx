@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ClassPeriod } from "../types/classPeriod";
 import { getScheduleStatus } from "../hooks/scheduleStatus";
 import { formatClockParts } from "../hooks/formatClockParts";
-import { apiFetch } from "../utils/api";
 
 type ClockProps = {
   schedule: ClassPeriod[];
@@ -14,18 +13,7 @@ const Clock: React.FC<ClockProps> = ({ schedule }) => {
 
   useEffect(() => {
     const fetchServerTime = async () => {
-      try {
-        const t0 = performance.now();
-        const data = await apiFetch<{ serverTime: string }>("/api/time");
-        const t1 = performance.now();
-        const serverTime = new Date(data.serverTime);
-        const roundTripTime = (t1 - t0) / 1000; // in seconds
-        const estimatedServerTime = new Date(serverTime.getTime() + roundTripTime * 500);
-        setServerTimeOffset(estimatedServerTime.getTime() - Date.now());
-      } catch (err) {
-        console.error("[Clock] Failed to sync with server time:", err);
-        setServerTimeOffset(null); // Fallback to device clock
-      }
+      setServerTimeOffset(null);
     };
 
     fetchServerTime();

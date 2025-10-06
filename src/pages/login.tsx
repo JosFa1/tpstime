@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import GoogleAuthService from '../services/GoogleAuthService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
@@ -16,39 +16,18 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setLoading(true);
     setError(null);
-
     try {
-      const authService = GoogleAuthService.getInstance();
-      const result = await authService.signIn();
-
-      if (result.success && result.user) {
-        localStorage.setItem('accessToken', 'google-auth-token');
-        login(result.user);
-        navigate('/');
-      } else {
-        setError(result.error || 'Authentication failed');
-      }
+      // This will redirect to Google's auth page
+      GoogleAuthService.getInstance().signIn();
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-      console.error('Login error:', err);
-    } finally {
       setLoading(false);
+      setError('Failed to initiate sign-in process');
+      console.error('Login error:', err);
     }
   };
-
-  useEffect(() => {
-    const initGoogle = async () => {
-      try {
-        await GoogleAuthService.getInstance().initialize();
-      } catch (err) {
-        console.error('Failed to initialize Google Auth:', err);
-      }
-    };
-    initGoogle();
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-text">
