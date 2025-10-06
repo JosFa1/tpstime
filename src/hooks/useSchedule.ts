@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 // Pull in shared API helper so all network requests are centralized
-import { apiFetch } from "../utils/api";
 
 interface UseScheduleReturn {
   schedule: any;
@@ -36,11 +35,7 @@ export function useSchedule(): UseScheduleReturn {
 
       // Request `/schedule` from the backend. The helper handles
       // base URL prefixing and JSON validation.
-      const data = await apiFetch("/api/schedule", {
-        headers,
-      });
       // Persist the schedule so components can render it
-      setSchedule(data.schedule || data);
     } catch (err) {
       // Gracefully surface errors to any components using this hook
       const errorMessage =
