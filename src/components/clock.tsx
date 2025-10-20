@@ -9,15 +9,6 @@ type ClockProps = {
 
 const Clock: React.FC<ClockProps> = ({ schedule }) => {
   const [status, setStatus] = useState(() => getScheduleStatus(schedule));
-  const [serverTimeOffset, setServerTimeOffset] = useState<number | null>(null);
-
-  useEffect(() => {
-    const fetchServerTime = async () => {
-      setServerTimeOffset(null);
-    };
-
-    fetchServerTime();
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,9 +16,9 @@ const Clock: React.FC<ClockProps> = ({ schedule }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [schedule, serverTimeOffset]);
+  }, [schedule]);
 
-  const { leftSide, rightSide } = formatClockParts(status.secondsUntilNext);
+  const { leftSide, middleSide, rightSide } = formatClockParts(status.secondsUntilNext);
 
   return (
     <div className="flex flex-col items-start justify-center space-y-1 font-mono">
@@ -35,7 +26,7 @@ const Clock: React.FC<ClockProps> = ({ schedule }) => {
         <p
           className={`text-[25vw] md:text-[20vw] w-full font-bold text-center leading-none text-primary`}
         >
-          {leftSide}:{rightSide}
+          {leftSide}:{middleSide ? `${middleSide}:` : ''}{rightSide}
         </p>
       )}
     </div>

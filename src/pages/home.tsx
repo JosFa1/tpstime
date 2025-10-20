@@ -8,6 +8,7 @@ import { getTodayIndex, mapScheduleWithClassNames } from "../utils/utils";
 import Schedule from "../components/schedule";
 import { ClassName } from "../types/className";
 import { useSchedule } from "../hooks/useSchedule";
+import { useGlobalClock } from "../hooks/useGlobalClock";
 import { useMemo } from "react";
 import React from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
@@ -86,6 +87,16 @@ function Home() {
   const thisWeek: WeeklySchedule = scheduleType === 'US'
     ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
     : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
+
+  // Get today's schedule for the global clock
+  const todaysSchedule = useMemo(() => {
+    const todayIndex = getTodayIndex();
+    if (todayIndex === -1) return [];
+    return mapScheduleWithClassNames(thisWeek[todayIndex].schedule, classNames);
+  }, [thisWeek, classNames]);
+
+  // Run global clock to update document title
+  useGlobalClock(todaysSchedule);
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col">
