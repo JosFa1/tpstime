@@ -10,11 +10,21 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
 
+  // If authentication is disabled via environment, skip login and go to home
+  const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;
+  const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');
+
   useEffect(() => {
+    if (!enableAuth) {
+      // Auth disabled - redirect straight to home
+      navigate('/', { replace: true });
+      return;
+    }
+
     if (isAuthenticated) {
       navigate('/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, enableAuth]);
 
   const handleGoogleSignIn = () => {
     setLoading(true);

@@ -1,0 +1,98 @@
+[1mdiff --git a/.env b/.env[m
+[1mindex 5115825..5aa79b5 100644[m
+[1m--- a/.env[m
+[1m+++ b/.env[m
+[36m@@ -12,6 +12,7 @@[m [mREACT_APP_API_URL=http://tpstime.trinityprep.org:3001[m
+ [m
+ # Enable / disable features[m
+ REACT_APP_ENABLE_TIMESYNC=false[m
+[32m+[m[32mREACT_APP_ENABLE_AUTH=true[m
+ [m
+ # Google OAuth Configuration[m
+ REACT_APP_GOOGLE_CLIENT_ID=312130461008-6jbpf90g7e4hv005rjp5v9of9mtlo5hf.apps.googleusercontent.com[m
+[1mdiff --git a/src/components/HamburgerMenu.tsx b/src/components/HamburgerMenu.tsx[m
+[1mindex 8612b09..3886ffe 100644[m
+[1m--- a/src/components/HamburgerMenu.tsx[m
+[1m+++ b/src/components/HamburgerMenu.tsx[m
+[36m@@ -32,6 +32,8 @@[m [mconst HamburgerMenu: React.FC = () => {[m
+ 	const navigate = useNavigate();[m
+ 	const location = useLocation();[m
+ 	const { logout, user } = useAuth();[m
+[32m+[m	[32mconst enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;[m
+[32m+[m	[32mconst enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');[m
+ 	const [open, setOpen] = useState(false);[m
+ 	const menuRef = useRef<HTMLDivElement>(null);[m
+ 	const [isMobile, setIsMobile] = useState(false);[m
+[36m@@ -141,12 +143,14 @@[m [mconst HamburgerMenu: React.FC = () => {[m
+ 							label="Info"[m
+ 							navigate={navigate}[m
+ 						/>[m
+[31m-							<button[m
+[31m-							onClick={handleLogout}[m
+[31m-							className="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"[m
+[31m-						>[m
+[31m-							Logout[m
+[31m-						</button>[m
+[32m+[m							[32m{enableAuth && ([m
+[32m+[m								[32m<button[m
+[32m+[m									[32monClick={handleLogout}[m
+[32m+[m									[32mclassName="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"[m
+[32m+[m								[32m>[m
+[32m+[m									[32mLogout[m
+[32m+[m								[32m</button>[m
+[32m+[m							[32m)}[m
+ 					</div>[m
+ 				</div>[m
+ 			)}[m
+[1mdiff --git a/src/components/ProtectedRoute.tsx b/src/components/ProtectedRoute.tsx[m
+[1mindex 9193042..3fdf904 100644[m
+[1m--- a/src/components/ProtectedRoute.tsx[m
+[1m+++ b/src/components/ProtectedRoute.tsx[m
+[36m@@ -8,6 +8,8 @@[m [minterface ProtectedRouteProps {[m
+ [m
+ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {[m
+   const { isAuthenticated, loading } = useAuth();[m
+[32m+[m[32m  const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;[m
+[32m+[m[32m  const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');[m
+   const [checkingToken, setCheckingToken] = useState(true);[m
+   const [isLocallyAuthenticated, setIsLocallyAuthenticated] = useState(false);[m
+   const location = useLocation();[m
+[36m@@ -31,6 +33,11 @@[m [mconst ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {[m
+     );[m
+   }[m
+ [m
+[32m+[m[32m  // If auth is disabled via env, allow access to all routes[m
+[32m+[m[32m  if (!enableAuth) {[m
+[32m+[m[32m    return <>{children}</>;[m
+[32m+[m[32m  }[m
+[32m+[m
+   // Use either context auth or local storage auth[m
+   if (!isAuthenticated && !isLocallyAuthenticated) {[m
+     // Redirect to login, but save the attempted location[m
+[1mdiff --git a/src/pages/login.tsx b/src/pages/login.tsx[m
+[1mindex 7c523aa..3a27bf1 100644[m
+[1m--- a/src/pages/login.tsx[m
+[1m+++ b/src/pages/login.tsx[m
+[36m@@ -10,11 +10,21 @@[m [mconst Login: React.FC = () => {[m
+   const [loading, setLoading] = useState(false);[m
+   const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';[m
+ [m
+[32m+[m[32m  // If authentication is disabled via environment, skip login and go to home[m
+[32m+[m[32m  const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;[m
+[32m+[m[32m  const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');[m
+[32m+[m
+   useEffect(() => {[m
+[32m+[m[32m    if (!enableAuth) {[m
+[32m+[m[32m      // Auth disabled - redirect straight to home[m
+[32m+[m[32m      navigate('/', { replace: true });[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+[32m+[m
+     if (isAuthenticated) {[m
+       navigate('/');[m
+     }[m
+[31m-  }, [isAuthenticated, navigate]);[m
+[32m+[m[32m  }, [isAuthenticated, navigate, enableAuth]);[m
+ [m
+   const handleGoogleSignIn = () => {[m
+     setLoading(true);[m
