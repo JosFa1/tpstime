@@ -1,33 +1,29 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import CustomThemePanel from './CustomThemePanel';
 
-
-const themeOptions = [
-  { value: 'light', label: 'Light' },
-  { value: 'trinity', label: 'Trinity' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'forest', label: 'Forest' },
-  { value: 'rose', label: 'Rose' },
-  { value: 'ocean', label: 'Ocean' },
-  { value: 'sunset', label: 'Sunset' },
-];
-
-const ThemePreview: React.FC<{ theme: string; customPrimary: string }> = ({ theme, customPrimary }) => (
-  <div
-    className="w-64 h-36 rounded-lg border-2 flex flex-col justify-between shadow transition-all duration-200 border-primary mx-auto mb-4"
-    style={{
-      background: `var(--color-background)`,
-      color: `var(--color-text)`,
-      borderColor: customPrimary || 'var(--color-primary)',
-    }}
-    data-theme={theme}
+const ModeButton: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-1 rounded border font-semibold transition-colors duration-150 ${active ? 'bg-primary text-background border-primary' : 'bg-background text-primary border border-primary'}`}
   >
+    {children}
+  </button>
+);
+
+const PreviewCard: React.FC<{ title?: string }> = ({ title }) => (
+  <div className="w-64 h-36 rounded-lg border-2 flex flex-col justify-between shadow transition-all duration-200 mx-auto mb-4"
+       style={{
+         background: 'var(--color-background)',
+         color: 'var(--color-text)',
+         borderColor: 'var(--color-primary)'
+       }}>
     <div className="flex flex-row justify-between px-3 pt-3">
-      <span className="font-bold text-sm" style={{ color: customPrimary || 'var(--color-primary)' }}>A B C</span>
+      <span className="font-bold text-sm" style={{ color: 'var(--color-primary)' }}>{title ?? 'A B C'}</span>
       <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Wed</span>
     </div>
     <div className="flex flex-col items-center justify-center flex-1">
-      <span className="text-3xl font-bold" style={{ color: customPrimary || 'var(--color-primary)' }}>12:34</span>
+      <span className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>12:34</span>
       <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Until Math Ends</span>
     </div>
     <div className="flex flex-row justify-between px-3 pb-3">
@@ -38,63 +34,29 @@ const ThemePreview: React.FC<{ theme: string; customPrimary: string }> = ({ them
 );
 
 const ThemeSwitcher: React.FC = () => {
-  const { theme, setTheme, customPrimary, updateThemeColor } = useTheme();
-
-  const handleCustomColorChange = (color: string) => {
-    updateThemeColor('color-primary', color);
-  };
-
-  const handleDefaultColor = () => {
-    updateThemeColor('color-primary', ''); // Remove inline style, fallback to CSS var
-  };
+  const { mode, setMode } = useTheme();
 
   return (
-    <div className="p-4 bg-surface rounded-lg border border-border max-w-md mx-auto">
+    <div className="p-4 bg-surface rounded-lg border border-border max-w-md mx-auto w-full">
       <h3 className="text-lg font-semibold text-text mb-4 text-center">Theme Settings</h3>
 
-      {/* Theme selection buttons */}
+      {/* Mode selection */}
       <div className="flex flex-wrap gap-2 justify-center mb-4">
-        {themeOptions.map(opt => (
-          <button
-            key={opt.value}
-            className={`px-3 py-1 rounded border font-semibold transition-colors duration-150 ${theme === opt.value ? 'bg-primary text-background border-primary' : 'bg-background text-primary border border-primary'}`}
-            onClick={() => setTheme(opt.value as any)}
-          >
-            {opt.label}
-          </button>
-        ))}
+        <ModeButton active={mode === 'dark'} onClick={() => setMode('dark')}>Dark</ModeButton>
+        <ModeButton active={mode === 'system'} onClick={() => setMode('system')}>System</ModeButton>
+        <ModeButton active={mode === 'light'} onClick={() => setMode('light')}>Light</ModeButton>
+        <ModeButton active={mode === 'custom'} onClick={() => setMode('custom')}>Custom</ModeButton>
       </div>
 
-      {/* Single live preview */}
-      <ThemePreview theme={theme} customPrimary={customPrimary} />
+      {/* Live preview uses global CSS vars for simplicity */}
+      <PreviewCard />
 
-      {/* Primary Color Options */}
-      <div className="mb-2 flex gap-2 justify-center">
-        <button
-          onClick={() => handleCustomColorChange('#FF0000')}
-          className="bg-primary text-white px-3 py-1 rounded"
-        >
-          Red
-        </button>
-        <button
-          onClick={() => handleCustomColorChange('#10c50d')}
-          className="bg-primary text-white px-3 py-1 rounded"
-        >
-          Green
-        </button>
-        <button
-          onClick={() => handleCustomColorChange('#1CA9C9')}
-          className="bg-primary text-white px-3 py-1 rounded"
-        >
-          Blue
-        </button>
-        <button
-          onClick={handleDefaultColor}
-          className="bg-background text-primary border border-primary px-3 py-1 rounded"
-        >
-          Default
-        </button>
-      </div>
+      {/* Custom editor */}
+      {mode === 'custom' && (
+        <div className="mt-4">
+          <CustomThemePanel />
+        </div>
+      )}
     </div>
   );
 };
