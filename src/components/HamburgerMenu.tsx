@@ -32,6 +32,8 @@ const HamburgerMenu: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { logout, user } = useAuth();
+	const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;
+	const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [isMobile, setIsMobile] = useState(false);
@@ -141,12 +143,14 @@ const HamburgerMenu: React.FC = () => {
 							label="Info"
 							navigate={navigate}
 						/>
-							<button
-							onClick={handleLogout}
-							className="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"
-						>
-							Logout
-						</button>
+							{enableAuth && (
+								<button
+									onClick={handleLogout}
+									className="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"
+								>
+									Logout
+								</button>
+							)}
 					</div>
 				</div>
 			)}
