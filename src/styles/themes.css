@@ -92,8 +92,8 @@
   --color-accent: #b3e5fc; /* soft blue */
   --color-background: #181A20; /* dark base */
   --color-surface: #23272F; /* elevated surface */
-  --color-text: #cbcbcb; /* readable text */
-  --color-text-secondary: #b0b0b0; /* subdued text */
+  --color-text: #e6e6e6; /* weak white for main text */
+  --color-text-secondary: #cfcfcf; /* slightly dimmer white for secondary text */
   --color-border: #333A47;
   --color-error: #ff6464;
   --color-warning: #ffae00;
