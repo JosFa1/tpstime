@@ -19,18 +19,23 @@ function ProgressBar({ progress }: { progress: number }) {
   const pct = Math.max(0, Math.min(100, Number.isFinite(progress) ? progress : 0));
   return (
     <div className="w-full" aria-hidden>
-      <style>{`\n        @keyframes progressSlide {\n          0% { background-position: 0% 50%; }\n          100% { background-position: 200% 50%; }\n        }\n      `}</style>
-      <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-border, #e0e0e0)' }}>
+      <style>{`
+        @keyframes progressSlide {
+          0% { background-position: 0px 50%; }
+          100% { background-position: 600px 50%; }
+        }
+      `}</style>
+      <div className="w-full h-4 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', padding: '4px' }}>
         <div
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(pct)}
-          className="h-full transition-[width] duration-500"
+          className="h-full transition-[width] duration-500 rounded-full"
           style={{
             width: `${pct}%`,
-            backgroundImage: `linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent))`,
-            backgroundSize: '200% 100%',
+            backgroundImage: `repeating-linear-gradient(90deg, var(--color-primary) 0px, var(--color-secondary) 200px, var(--color-accent) 400px, var(--color-primary) 600px)`,
+            backgroundSize: '600px 100%',
             animation: 'progressSlide 3.5s linear infinite'
           }}
         />
@@ -110,8 +115,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, ADayUS, BDayUS, CDayUS, SDayUS]
-    : [ADayMS, ADayMS, BDayMS, CDayMS, SDayUS];
+    ? [ADayUS, BDayUS, CDayUS, ADayUS, ADayUS]
+    : [ADayMS, BDayMS, CDayMS, ADayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {

@@ -89,6 +89,7 @@ const Info: React.FC = () => {
                 <ul className="list-disc ml-6">
                   <li>Official launch of new website</li>
                   <li>Fully customizable themes</li>
+                  <li>Progress bar that matches theme</li>
                   <li>Removed the clock syncing feature due to new backend limitations</li>
                 </ul>
               </div>

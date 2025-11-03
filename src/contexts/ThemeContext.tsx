@@ -87,7 +87,7 @@ const seededCustomThemes: CustomTheme[] = [
     vars: {
       'color-primary': '#FDB414', // Gold
       'color-secondary': '#1976D2', // Blue
-      'color-accent': '#90CAF9', // Light Blue
+      'color-accent': '#8d37cbff', // Light Blue
       'color-background': '#002C5C', // Deep Blue
       'color-surface': '#0D3F7A',
       'color-text': '#FDB414',
@@ -102,9 +102,9 @@ const seededCustomThemes: CustomTheme[] = [
     id: 'ellis',
     name: 'Ellis',
     vars: {
-      'color-primary': '#2E7D32', // Green
+      'color-primary': '#3eb744ff', // Green
       'color-secondary': '#1976D2', // Blue
-      'color-accent': '#E3F2FD', // Light Blue/White
+      'color-accent': '#154d75ff', // Light Blue/White
       'color-background': '#102A43',
       'color-surface': '#1B3A4B',
       'color-text': '#E0F7FA',
@@ -119,14 +119,14 @@ const seededCustomThemes: CustomTheme[] = [
     id: 'maughan',
     name: 'Maughan',
     vars: {
-      'color-primary': '#6A1B9A', // Purple
+      'color-primary': '#9c45d2ff', // Purple
       'color-secondary': '#D32F2F', // Red
       'color-accent': '#FDB414', // Gold
       'color-background': '#2A1B2E',
       'color-surface': '#4B2E46',
       'color-text': '#FFF0F5',
       'color-text-secondary': '#FFD1DC',
-      'color-border': '#6A1B9A',
+      'color-border': '#9c45d2ff',
       'color-error': '#ff6464',
       'color-warning': '#ffae00',
       'color-success': '#10c50d',
@@ -137,7 +137,7 @@ const seededCustomThemes: CustomTheme[] = [
     name: 'Brokaw',
     vars: {
       'color-primary': '#D32F2F', // Red
-      'color-secondary': '#212121', // Black-ish
+      'color-secondary': '#824732ff', // Black-ish
       'color-accent': '#FDB414', // Gold
       'color-background': '#121212',
       'color-surface': '#1E1E1E',
@@ -154,7 +154,7 @@ const seededCustomThemes: CustomTheme[] = [
     name: 'Lawson',
     vars: {
       'color-primary': '#8BC34A', // Light Green
-      'color-secondary': '#9E9E9E', // Grey
+      'color-secondary': '#5e7d8fff', // Grey
       'color-accent': '#FDB414', // Gold
       'color-background': '#1E1E1E',
       'color-surface': '#2A2A2A',
@@ -170,13 +170,13 @@ const seededCustomThemes: CustomTheme[] = [
     id: 'st-john',
     name: 'St. John',
     vars: {
-      'color-primary': '#1B5E20', // Dark Green
+      'color-primary': '#39b841ff', // Dark Green
       'color-secondary': '#795548', // Brown
-      'color-accent': '#9E9E9E', // Grey
+      'color-accent': '#ae7241ff', // Grey
       'color-background': '#1B2E1B',
       'color-surface': '#2E4632',
       'color-text': '#E9F5DB',
-      'color-text-secondary': '#B7C9A8',
+      'color-text-secondary': '#c9b9a8ff',
       'color-border': '#616161',
       'color-error': '#ff6464',
       'color-warning': '#ffae00',
