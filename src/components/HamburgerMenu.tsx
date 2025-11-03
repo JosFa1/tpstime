@@ -152,6 +152,9 @@ const HamburgerMenu: React.FC = () => {
 								</button>
 							)}
 					</div>
+					<div className="w-full text-center text-xs text-gray-500 mt-4 mb-2">
+    Joe Borgman & Asad Sadikov
+</div>
 				</div>
 			)}
 		</div>

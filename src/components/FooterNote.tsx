@@ -6,7 +6,7 @@ const FooterNote: React.FC = () => (
     style={{ position: 'relative' }}
   >
     <span>
-      Questions? Bugs? Request Features? Email: <a href="mailto:tpstime@trinityprep.org" className="underline text-gray-400">tpstime@trinityprep.org</a>
+      Questions? Bugs? Feature Requests? Email: <a href="mailto:tpstime@trinityprep.org" className="underline text-gray-400">tpstime@trinityprep.org</a>
     </span>
   </footer>
 );

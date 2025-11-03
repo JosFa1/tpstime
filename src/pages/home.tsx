@@ -9,10 +9,40 @@ import Schedule from "../components/schedule";
 import { ClassName } from "../types/className";
 import { useSchedule } from "../hooks/useSchedule";
 import { useGlobalClock } from "../hooks/useGlobalClock";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import React from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
+
+function ProgressBar({ progress }: { progress: number }) {
+  // moving gradient that uses theme CSS variables so it matches themes
+  const pct = Math.max(0, Math.min(100, Number.isFinite(progress) ? progress : 0));
+  return (
+    <div className="w-full" aria-hidden>
+      <style>{`
+        @keyframes progressSlide {
+          0% { background-position: 0px 50%; }
+          100% { background-position: 600px 50%; }
+        }
+      `}</style>
+      <div className="w-full h-4 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', padding: '4px' }}>
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(pct)}
+          className="h-full transition-[width] duration-500 rounded-full"
+          style={{
+            width: `${pct}%`,
+            backgroundImage: `repeating-linear-gradient(90deg, var(--color-primary) 0px, var(--color-secondary) 200px, var(--color-accent) 400px, var(--color-primary) 600px)`,
+            backgroundSize: '600px 100%',
+            animation: 'progressSlide 3.5s linear infinite'
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 function Home() {
   const [scheduleType, setScheduleType] = React.useState<'US' | 'MS'>(() => {
@@ -85,8 +115,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, BDayUS, CDayUS, ADayUS, SDayUS]
-    : [ADayMS, BDayMS, CDayMS, ADayMS, SDayUS];
+    ? [ADayUS, BDayUS, CDayUS, ADayUS, ADayUS]
+    : [ADayMS, BDayMS, CDayMS, ADayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
@@ -97,6 +127,62 @@ function Home() {
 
   // Run global clock to update document title
   useGlobalClock(todaysSchedule);
+
+  const [progress, setProgress] = useState(0);
+  const [showProgressBar, setShowProgressBar] = useState(() => {
+    const saved = localStorage.getItem("showProgressBar");
+    return saved === "true";
+  });
+
+  // listen for storage changes from other tabs and for our custom event from the settings page
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'showProgressBar') {
+        setShowProgressBar(e.newValue === 'true');
+      }
+    };
+
+    const onCustom = (e: any) => {
+      // custom event sends boolean in detail
+      if (typeof e.detail === 'boolean') setShowProgressBar(e.detail);
+      else setShowProgressBar(localStorage.getItem('showProgressBar') === 'true');
+    };
+
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('showProgressBarChanged', onCustom as EventListener);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('showProgressBarChanged', onCustom as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const currentPeriod = todaysSchedule.find((period) => {
+        const start = period.getStartUnix();
+        const end = period.getEndUnix();
+        return now >= start && now < end;
+      });
+
+      if (!currentPeriod) {
+        setProgress(0);
+        return;
+      }
+
+      const start = currentPeriod.getStartUnix();
+      const end = currentPeriod.getEndUnix();
+      const elapsed = now - start;
+      const total = end - start;
+      const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
+      setProgress(pct);
+    };
+
+    // run immediately then every second
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [todaysSchedule]);
 
   return (
     <div className="text-text bg-background min-h-screen w-full flex flex-col">
@@ -112,6 +198,12 @@ function Home() {
           <HamburgerMenu />
         </div>
       </div>
+      {/* Progress bar placed under top bar so it feels attached to header */}
+      {showProgressBar && (
+        <div className="px-2 sm:px-4 mt-2">
+          <ProgressBar progress={progress} />
+        </div>
+      )}
       {/* Main content */}
       {getTodayIndex() === -1 ? (
         <div className="text-secondary w-full min-h-[60vh] flex justify-center items-center text-xl sm:text-2xl">

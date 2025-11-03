@@ -86,14 +86,14 @@
 }
 
 [data-theme="dark"], .dark {
-  /* Dark theme colors (oklch) */
-  --color-primary: #cbcbcb;
-  --color-secondary: #cbcbcb;
-  --color-accent: #cbcbcb;
-  --color-background: #181A20;
-  --color-surface: #23272F;
-  --color-text: #cbcbcb;
-  --color-text-secondary: #cbcbcb;
+  /* Dark theme with blue accents */
+  --color-primary: #90caf9; /* light blue accent */
+  --color-secondary: #64b5f6; /* secondary blue */
+  --color-accent: #b3e5fc; /* soft blue */
+  --color-background: #181A20; /* dark base */
+  --color-surface: #23272F; /* elevated surface */
+  --color-text: #cbcbcb; /* readable text */
+  --color-text-secondary: #b0b0b0; /* subdued text */
   --color-border: #333A47;
   --color-error: #ff6464;
   --color-warning: #ffae00;
