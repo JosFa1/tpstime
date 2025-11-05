@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import GoogleAuthService from '../services/GoogleAuthService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const requiredDomain = process.env.REACT_APP_GOOGLE_REQUIRED_EMAIL_DOMAIN || '@trinityprep.org';
+  // Wifi help UI state
+  const [showHelp, setShowHelp] = useState(false);
+  const [wifiChecking, setWifiChecking] = useState(false);
+  const [wifiError, setWifiError] = useState<string | null>(null);
 
   // If authentication is disabled via environment, skip login and go to home
   const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;
   const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');
+
+  // Optional WiFi check gate
+  const enableWifiCheckEnv = process.env.REACT_APP_ENABLE_WIFI_CHECK;
+  const enableWifiCheck = enableWifiCheckEnv === 'true' || enableWifiCheckEnv === '1';
+  const wifiCheckUrl = process.env.REACT_APP_WIFI_CHECK_URL || '';
 
   useEffect(() => {
     if (!enableAuth) {
@@ -26,6 +36,20 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate, enableAuth]);
 
+  // If we arrive here after a failed auth attempt, surface the error and show help
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const urlError = params.get('error') || params.get('reason') || params.get('message');
+      const storedError = localStorage.getItem('lastAuthError');
+      if (urlError || storedError) {
+        setError(decodeURIComponent(urlError || storedError || ''));
+        setShowHelp(true);
+        if (storedError) localStorage.removeItem('lastAuthError');
+      }
+    } catch {}
+  }, [location.search]);
+
   const handleGoogleSignIn = () => {
     setLoading(true);
     setError(null);
@@ -38,6 +62,59 @@ const Login: React.FC = () => {
       console.error('Login error:', err);
     }
   };
+
+  // Ping an intranet-only URL using an <img> to avoid CORS issues.
+  const pingImage = (url: string, timeoutMs = 2500): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const img = new Image();
+        let settled = false;
+        const timer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          try { img.src = ''; } catch {}
+          reject(new Error('timeout'));
+        }, timeoutMs);
+        img.onload = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve();
+        };
+        img.onerror = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          reject(new Error('error'));
+        };
+        // cache-buster
+        img.src = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+      } catch (e) {
+        reject(e as Error);
+      }
+    });
+  };
+
+  const openTPStime = async () => {
+    setWifiError(null);
+    if (enableWifiCheck && wifiCheckUrl) {
+      try {
+        setWifiChecking(true);
+        await pingImage(wifiCheckUrl, 3000);
+        window.location.assign('http://tpstime.trinityprep.org');
+      } catch (e) {
+        setWifiError("We couldn't confirm you're on school WiFi. Please connect to an approved network below and try again.");
+      } finally {
+        setWifiChecking(false);
+      }
+      return;
+    }
+    // No check configured/enabled; proceed
+    window.location.assign('http://tpstime.trinityprep.org');
+  };
+
+  const allowedSSIDs = ['US', 'US-new', 'MS', 'MS-new', 'Faculty'];
+  const blockedSSIDs = ['Guest', 'Guest-new', 'Hotspots', 'Non-School wifi'];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-text">
@@ -68,6 +145,70 @@ const Login: React.FC = () => {
           </svg>
           {loading ? 'Signing in…' : 'Sign in with Google'}
         </button>
+
+        {/* Help: Issues logging in? */}
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => setShowHelp((s) => !s)}
+            className="text-sm text-primary hover:underline"
+          >
+            {showHelp ? 'Hide help' : "Can't sign in with Google?"}
+          </button>
+        </div>
+
+        {showHelp && (
+          <div className="mt-4 rounded-lg border border-border bg-background/40 p-4">
+            <h2 className="text-lg font-semibold mb-2">Having trouble logging in?</h2>
+            <p className="text-sm mb-3">If Google sign-in isn’t working, make sure you’re connected to a school Wi-Fi network. Then open TPStime directly.</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-semibold text-green-600 dark:text-green-400 mb-1">Connect to one of the following Wi‑Fis:</h3>
+                <ul className="space-y-1">
+                  {allowedSSIDs.map((ssid) => (
+                    <li key={ssid} className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600 text-white text-xs">✓</span>
+                      <span>{ssid}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-red-600 dark:text-red-400 mb-1">These will NOT work:</h3>
+                <ul className="space-y-1">
+                  {blockedSSIDs.map((ssid) => (
+                    <li key={ssid} className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-600 text-white text-xs">✕</span>
+                      <span className="font-semibold">{ssid}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {wifiError && (
+              <div className="mt-3 rounded-md border border-red-300 bg-red-50 dark:bg-red-900/20 p-2 text-sm text-red-800 dark:text-red-200">
+                {wifiError}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={openTPStime}
+              disabled={wifiChecking}
+              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-md bg-secondary text-white font-semibold px-4 py-2 hover:bg-secondary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {wifiChecking ? 'Checking Wi‑Fi…' : 'Open TPStime (tpstime.trinityprep.org)'}
+            </button>
+
+            {enableWifiCheck && !wifiCheckUrl && (
+              <p className="mt-2 text-xs text-yellow-700 dark:text-yellow-300">
+                Wi‑Fi check is enabled, but no REACT_APP_WIFI_CHECK_URL is configured. The link will open without verification.
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
