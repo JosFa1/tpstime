@@ -68,7 +68,7 @@ function Home() {
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
   const CDayMS = { title: "C", schedule: msCSchedule };
-  const SDayMS = { title: "A", schedule: msSSchedule };  // Using A as display title while keeping msSSchedule
+  const SDayMS = { title: "A", schedule: msSBSchedule };  // Using A as display title while keeping msSSchedule
 
   const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
 
@@ -116,7 +116,7 @@ function Home() {
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
     ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
-    : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
+    : [ADayMS, ADayMS, SDayMS, CDayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
