@@ -1,7 +1,7 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
-import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
+import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule, sbSchedule } from "../types/schedule";
+import { msASchedule, msBSchedule, msCSchedule, msSBSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import { WeeklySchedule } from "../types/weekTypes";
 import { getTodayIndex, mapScheduleWithClassNames } from "../utils/utils";
@@ -64,6 +64,7 @@ function Home() {
   const BDayUS = { title: "B", schedule: bSchedule };
   const CDayUS = { title: "C", schedule: cSchedule };
   const SDayUS = { title: "A", schedule: sSchedule };  // Using A as display title while keeping sSchedule
+  const sbDayUS = { title: "B", schedule: sbSchedule }; // New SB day for US schedule
   // MS schedule
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
@@ -115,7 +116,7 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
+    ? [ADayUS, ADayUS, sbDayUS, CDayUS, ADayUS]
     : [ADayMS, ADayMS, SDayMS, CDayMS, ADayMS];
 
   // Get today's schedule for the global clock
