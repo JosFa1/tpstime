@@ -1,7 +1,7 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
-import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule, sbSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule, msSBSchedule } from "../types/msSchedule";
+import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule, sbSchedule, pSchedule } from "../types/schedule";
+import { msASchedule, msBSchedule, msCSchedule, msSBSchedule, msPSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import { WeeklySchedule } from "../types/weekTypes";
 import { getTodayIndex, mapScheduleWithClassNames } from "../utils/utils";
@@ -63,13 +63,13 @@ function Home() {
   const ADayUS = { title: "A", schedule: aSchedule };
   const BDayUS = { title: "B", schedule: bSchedule };
   const CDayUS = { title: "C", schedule: cSchedule };
-  const SDayUS = { title: "A", schedule: sSchedule };  // Using A as display title while keeping sSchedule
+  const SDayUS = { title: "A", schedule: pSchedule };  // Using A as display title while keeping sSchedule
   const sbDayUS = { title: "B", schedule: sbSchedule }; // New SB day for US schedule
   // MS schedule
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
   const CDayMS = { title: "C", schedule: msCSchedule };
-  const SDayMS = { title: "A", schedule: msSBSchedule };  // Using A as display title while keeping msSSchedule
+  const SDayMS = { title: "A", schedule: msPSchedule };  // Using A as display title while keeping msSSchedule
 
   const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
 
@@ -116,8 +116,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
-    : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
+    ? [ADayUS, ADayUS, BDayUS, CDayUS, SDayUS]
+    : [ADayMS, ADayMS, BDayMS, CDayMS, SDayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
