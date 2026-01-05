@@ -1,6 +1,6 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
-import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule } from "../types/schedule";
+import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule, iSchedule } from "../types/schedule";
 import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import { WeeklySchedule } from "../types/weekTypes";
@@ -63,12 +63,13 @@ function Home() {
   const ADayUS = { title: "A", schedule: aSchedule };
   const BDayUS = { title: "B", schedule: bSchedule };
   const CDayUS = { title: "C", schedule: cSchedule };
-  const SDayUS = { title: "A", schedule: sSchedule };  // Using A as display title while keeping sSchedule
+  const SDayUS = { title: "A", schedule: sSchedule };
+  const IDayUS = { title: "I", schedule: iSchedule };
   // MS schedule
   const ADayMS = { title: "A", schedule: msASchedule };
   const BDayMS = { title: "B", schedule: msBSchedule };
   const CDayMS = { title: "C", schedule: msCSchedule };
-  const SDayMS = { title: "A", schedule: msSSchedule };  // Using A as display title while keeping msSSchedule
+  const SDayMS = { title: "A", schedule: msSSchedule };
 
   const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
 
@@ -115,8 +116,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, BDayUS, CDayUS, ADayUS, ADayUS]
-    : [ADayMS, BDayMS, CDayMS, ADayMS, ADayMS];
+    ? [NSDay, IDayUS, IDayUS, IDayUS, IDayUS]
+    : [NSDay, ADayMS, BDayMS, CDayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
