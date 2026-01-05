@@ -61,6 +61,11 @@ export const sSchedule = [
   new ClassPeriod("6th Period", "11:05", "11:35"),
   new ClassPeriod("7th Period", "11:40", "12:10"),
 ];
+export const iSchedule = [
+  new ClassPeriod("Block A", "08:00", "11:00"),
+  new ClassPeriod("Lunch", "11:05", "11:55"),
+  new ClassPeriod("Block B", "12:00", "3:00"),
+];
 
 export const NSchedule = [
   new ClassPeriod("No School Today / Labor Day", "08:00", "15:20"),
