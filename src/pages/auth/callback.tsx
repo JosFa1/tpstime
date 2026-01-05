@@ -35,8 +35,10 @@ const OAuthCallback: React.FC = () => {
           // Exchange code for token
           const token = await exchangeCodeForToken(code);
           if (!token) {
-            setError('Failed to exchange authorization code for token');
-            setTimeout(() => navigate('/login'), 3000);
+            const msg = 'Failed to exchange authorization code for token';
+            setError(msg);
+            try { localStorage.setItem('lastAuthError', msg); } catch {}
+            setTimeout(() => navigate('/login?error=1'), 3000);
             return;
           }
           
@@ -50,8 +52,10 @@ const OAuthCallback: React.FC = () => {
             // Use a slight delay to ensure state is updated
             setTimeout(() => navigate('/', { replace: true }), 100);
           } else {
-            setError(result.error || 'Authentication failed');
-            setTimeout(() => navigate('/login'), 3000);
+            const msg = result.error || 'Authentication failed';
+            setError(msg);
+            try { localStorage.setItem('lastAuthError', msg); } catch {}
+            setTimeout(() => navigate('/login?error=1'), 3000);
           }
           return;
         }
@@ -61,8 +65,10 @@ const OAuthCallback: React.FC = () => {
         
         if (urlError) {
           console.error('Authentication error from URL:', urlError);
-          setError(`Authentication error: ${urlError}`);
-          setTimeout(() => navigate('/login'), 3000);
+          const msg = `Authentication error: ${urlError}`;
+          setError(msg);
+          try { localStorage.setItem('lastAuthError', msg); } catch {}
+          setTimeout(() => navigate('/login?error=1'), 3000);
           return;
         }
         
@@ -84,8 +90,10 @@ const OAuthCallback: React.FC = () => {
             }
           }
           
-          setError('Authentication failed - no access token received');
-          setTimeout(() => navigate('/login'), 3000);
+          const msg = 'Authentication failed - no access token received';
+          setError(msg);
+          try { localStorage.setItem('lastAuthError', msg); } catch {}
+          setTimeout(() => navigate('/login?error=1'), 3000);
           return;
         }
         
@@ -99,13 +107,17 @@ const OAuthCallback: React.FC = () => {
           // Use a slight delay to ensure state is updated
           setTimeout(() => navigate('/', { replace: true }), 100);
         } else {
-          setError(result.error || 'Authentication failed');
-          setTimeout(() => navigate('/login'), 3000);
+          const msg = result.error || 'Authentication failed';
+          setError(msg);
+          try { localStorage.setItem('lastAuthError', msg); } catch {}
+          setTimeout(() => navigate('/login?error=1'), 3000);
         }
       } catch (err) {
         console.error('OAuth callback error:', err);
-        setError('An unexpected error occurred during authentication');
-        setTimeout(() => navigate('/login'), 3000);
+        const msg = 'An unexpected error occurred during authentication';
+        setError(msg);
+        try { localStorage.setItem('lastAuthError', msg); } catch {}
+        setTimeout(() => navigate('/login?error=1'), 3000);
       } finally {
         setProcessingAuth(false);
       }
