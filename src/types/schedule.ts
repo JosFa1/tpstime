@@ -75,7 +75,7 @@ export const sSchedule = [
 export const iSchedule = [
   new ClassPeriod("Block A", "08:00", "11:00"),
   new ClassPeriod("Lunch", "11:05", "11:55"),
-  new ClassPeriod("Block B", "12:00", "3:00"),
+  new ClassPeriod("Block B", "12:00", "15:00"),
 ];
 
 export const NSchedule = [
