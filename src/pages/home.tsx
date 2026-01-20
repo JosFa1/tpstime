@@ -116,7 +116,7 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [IDayUS, IDayUS, IDayUS, IDayUS, IDayUS]
+    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
     : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
 
   // Get today's schedule for the global clock
