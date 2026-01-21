@@ -19,8 +19,8 @@ export const bSchedule = [
   new ClassPeriod("1st Period", "08:10", "09:30"),
   new ClassPeriod("Break", "09:35", "09:55"),
   new ClassPeriod("3rd Period", "10:00", "11:20"),
-  new ClassPeriod("5th Period", "11:25", "12:05"),
-  new ClassPeriod("Lunch", "12:10", "13:30"),
+  new ClassPeriod("5th Period", "11:25", "12:45"),
+  new ClassPeriod("Lunch", "12:50", "13:30"),
   new ClassPeriod("7th Period", "13:35", "14:55"),
   new ClassPeriod("Study Period", "15:00", "15:20"),
 ];
