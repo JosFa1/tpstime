@@ -17,12 +17,12 @@ type House = {
 };
 
 const initialHouses: House[] = [
-  { id: "house1", name: "Hay", score: 310 },
-  { id: "house2", name: "Maughan", score: 270.02 },
-  { id: "house3", name: "Lawson", score: 250.03 },
-  { id: "house4", name: "St. John", score: 330 },
-  { id: "house5", name: "Ellis", score: 325 },
-  { id: "house6", name: "Brokaw", score: 315.01 },
+  { id: "house1", name: "Hay", score: 325 },
+  { id: "house2", name: "Maughan", score: 275 },
+  { id: "house3", name: "Lawson", score: 265 },
+  { id: "house4", name: "St. John", score: 355 },
+  { id: "house5", name: "Ellis", score: 330 },
+  { id: "house6", name: "Brokaw", score: 330 },
 ];
 
 
