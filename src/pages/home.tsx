@@ -116,8 +116,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [NSDay, CDayUS, BDayUS, ADayUS, ADayUS]
-    : [NSDay, CDayMS, BDayMS, ADayMS, ADayMS];
+    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
+    : [ADayMS, ADayMS, BDayMS, CDayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
@@ -203,6 +203,21 @@ function Home() {
       {showProgressBar && (
         <div className="px-2 sm:px-4 mt-2">
           <ProgressBar progress={progress} />
+        </div>
+      )}
+
+      {scheduleType === 'MS' && (
+        <div className="px-2 sm:px-4 mt-4">
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="rounded-lg px-5 py-3 text-center border-l-4 border-r-4" style={{ borderLeftColor: 'var(--color-primary)', borderRightColor: 'var(--color-accent)', backgroundColor: 'var(--color-surface)' }}>
+              <h3 className="text-text text-lg sm:text-xl font-semibold">
+                Vote Jake Borgman
+              </h3>
+              <p className="text-text-secondary text-sm">
+                Rising 9th Grade Class President
+              </p>
+            </div>
+          </div>
         </div>
       )}
       {/* Main content */}
