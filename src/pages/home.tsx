@@ -116,8 +116,8 @@ function Home() {
 
   // Weekly pattern: A, A, B, C, A
   const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [NSDay, IDayUS, IDayUS, IDayUS, IDayUS]
-    : [NSDay, ADayMS, BDayMS, CDayMS, ADayMS];
+    ? [NSDay, ADayUS, ADayUS, ADayUS, ADayUS]
+    : [NSDay, ADayMS, ADayMS, ADayMS, ADayMS];
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
