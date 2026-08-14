@@ -19,8 +19,8 @@ export const bSchedule = [
   new ClassPeriod("1st Period", "08:10", "09:30"),
   new ClassPeriod("Break", "09:35", "09:55"),
   new ClassPeriod("3rd Period", "10:00", "11:20"),
-  new ClassPeriod("5th Period", "11:25", "12:05"),
-  new ClassPeriod("Lunch", "12:10", "13:30"),
+  new ClassPeriod("5th Period", "11:25", "12:45"),
+  new ClassPeriod("Lunch", "12:50", "13:30"),
   new ClassPeriod("7th Period", "13:35", "14:55"),
   new ClassPeriod("Study Period", "15:00", "15:20"),
 ];
@@ -63,19 +63,23 @@ export const pSchedule = [
 ];
 
 export const sSchedule = [
-  new ClassPeriod("1st Period", "08:00", "08:30"),
-  new ClassPeriod("2nd Period", "08:35", "09:05"),
-  new ClassPeriod("3rd Period", "09:10", "09:40"),
-  new ClassPeriod("4th Period", "09:45", "10:15"),
-  new ClassPeriod("Break", "10:15", "10:25"),
-  new ClassPeriod("5th Period", "10:30", "11:00"),
-  new ClassPeriod("6th Period", "11:05", "11:35"),
-  new ClassPeriod("7th Period", "11:40", "12:10"),
+  new ClassPeriod("1st Period", "08:15", "08:50"),
+  new ClassPeriod("2nd Period", "08:55", "09:30"),
+  new ClassPeriod("Break", "09:35", "10:00"),
+  new ClassPeriod("3rd Period", "10:45", "11:20"),
+  new ClassPeriod("4th", "10:45", "11:20"),
+  new ClassPeriod("5th Period", "11:25", "12:05"),
+  new ClassPeriod("Lunch", "12:10", "12:50"),
+  new ClassPeriod("6th Period", "12:55", "13:30"),
+  new ClassPeriod("7th Period", "13:30", "14:10"),
 ];
 export const iSchedule = [
-  new ClassPeriod("Block A", "08:00", "11:00"),
-  new ClassPeriod("Lunch", "11:05", "11:55"),
-  new ClassPeriod("Block B", "12:00", "3:00"),
+  new ClassPeriod("Short Block A", "08:00", "8:25"),
+  new ClassPeriod("Assembly", "8:30", "9:00"),
+  new ClassPeriod("Symposium Preperation", "9:00", "9:30"),
+  new ClassPeriod("Symposium", "9:30", "10:55"),
+  new ClassPeriod("US Assembly", "11:00", "11:30"),
+  
 ];
 
 export const NSchedule = [
