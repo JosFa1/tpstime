@@ -206,20 +206,6 @@ function Home() {
         </div>
       )}
 
-      {scheduleType === 'MS' && (
-        <div className="px-2 sm:px-4 mt-4">
-          <div className="w-full max-w-2xl mx-auto">
-            <div className="rounded-lg px-5 py-3 text-center border-l-4 border-r-4" style={{ borderLeftColor: 'var(--color-primary)', borderRightColor: 'var(--color-accent)', backgroundColor: 'var(--color-surface)' }}>
-              <h3 className="text-text text-lg sm:text-xl font-semibold">
-                Vote Jake Borgman
-              </h3>
-              <p className="text-text-secondary text-sm">
-                Rising 9th Grade Class President
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Main content */}
       {getTodayIndex() === -1 ? (
         <div className="text-secondary w-full min-h-[60vh] flex justify-center items-center text-xl sm:text-2xl">
