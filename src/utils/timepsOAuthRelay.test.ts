@@ -1,8 +1,47 @@
-import { buildTimePSOAuthRelayUrl } from './timepsOAuthRelay';
+import { buildTimePSOAuthRelayUrl, exchangeTimePSIdToken } from './timepsOAuthRelay';
 
 const state = `timeps_${'a'.repeat(43)}`;
 
 describe('TPSTime website handoff', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    window.history.replaceState({}, '', '/');
+  });
+
+  it('posts the ID token with no URL token exposure and validates the extension return', async () => {
+    const redirectUrl = `https://kjjmokfjlgabfhkookiedbfhfdehgbcl.chromiumapp.org/oauth2?state=${state}&code=one-time`;
+    const fetchMock = jest.fn(async (_url: string, options: any) => {
+      expect(window.location.hash).toBe('');
+      expect(options.credentials).toBe('omit');
+      expect(JSON.parse(options.body)).toEqual({ state, idToken: 'signed.google.token' });
+      return { ok: true, json: async () => ({ redirectUrl }) };
+    });
+    const previousFetch = global.fetch;
+    global.fetch = fetchMock as any;
+    try {
+      const hash = `#state=${state}&id_token=signed.google.token`;
+      window.history.replaceState({}, '', '/auth/callback/' + hash);
+      expect(await exchangeTimePSIdToken(hash)).toBe(redirectUrl);
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/tpstime/callback'),
+        expect.objectContaining({ method: 'POST' }),
+      );
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ redirectUrl: 'https://attacker.test' }),
+      });
+      await expect(exchangeTimePSIdToken(hash)).rejects.toThrow('Invalid TimePS return');
+    } finally {
+      global.fetch = previousFetch;
+    }
+  });
+
+  it('rejects access-token or mixed responses and ignores normal website tokens', async () => {
+    expect(await exchangeTimePSIdToken('#id_token=normal-website-token')).toBeNull();
+    await expect(
+      exchangeTimePSIdToken(`#state=${state}&id_token=jwt&access_token=access`),
+    ).rejects.toThrow('Invalid TimePS');
+  });
   it('keeps normal website login on its existing path', () => {
     expect(buildTimePSOAuthRelayUrl('?code=website-code&state=normal')).toBeNull();
     expect(buildTimePSOAuthRelayUrl('?code=website-code')).toBeNull();

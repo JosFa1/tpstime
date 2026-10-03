@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import GoogleAuthService from '../../services/GoogleAuthService';
 import { extractTokenFromUrl, exchangeCodeForToken } from '../../utils/auth';
-import { buildTimePSOAuthRelayUrl } from '../../utils/timepsOAuthRelay';
+import { buildTimePSOAuthRelayUrl, exchangeTimePSIdToken } from '../../utils/timepsOAuthRelay';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +24,8 @@ const OAuthCallback: React.FC = () => {
       setProcessingAuth(true);
       
       try {
-        const timepsRelay = buildTimePSOAuthRelayUrl(window.location.search);
+        const timepsRelay = await exchangeTimePSIdToken(window.location.hash) ||
+          buildTimePSOAuthRelayUrl(window.location.search);
         if (timepsRelay) {
           window.location.replace(timepsRelay);
           return;
