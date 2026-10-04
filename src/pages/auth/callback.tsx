@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import GoogleAuthService from '../../services/GoogleAuthService';
 import { extractTokenFromUrl, exchangeCodeForToken } from '../../utils/auth';
 import { buildTimePSOAuthRelayUrl, exchangeTimePSIdToken } from '../../utils/timepsOAuthRelay';
+import { finishWebsiteGoogleSignIn } from '../../utils/websiteOAuth';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,12 @@ const OAuthCallback: React.FC = () => {
       setProcessingAuth(true);
       
       try {
+        const websiteUser = await finishWebsiteGoogleSignIn();
+        if (websiteUser) {
+          login(websiteUser);
+          navigate('/', { replace: true });
+          return;
+        }
         const timepsRelay = await exchangeTimePSIdToken(window.location.hash) ||
           buildTimePSOAuthRelayUrl(window.location.search);
         if (timepsRelay) {
