@@ -50,12 +50,12 @@ const Login: React.FC = () => {
     } catch {}
   }, [location.search]);
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setLoading(true);
     setError(null);
     try {
       // This will redirect to Google's auth page
-      GoogleAuthService.getInstance().signIn();
+      await GoogleAuthService.getInstance().signIn();
     } catch (err) {
       setLoading(false);
       setError('Failed to initiate sign-in process');

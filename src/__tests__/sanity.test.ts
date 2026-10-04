@@ -6,3 +6,4 @@ describe('sanity', () => {
     expect(true).toBe(true);
   });
 });
+export {};
