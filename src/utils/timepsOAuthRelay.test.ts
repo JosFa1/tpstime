@@ -26,6 +26,9 @@ describe('TPSTime website handoff', () => {
         expect.stringContaining('/tpstime/callback'),
         expect.objectContaining({ method: 'POST' }),
       );
+      const adminUrl = `https://admin.timeps.buzz/auth/google/callback?state=${state}&code=admin-code`;
+      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ redirectUrl: adminUrl }) });
+      expect(await exchangeTimePSIdToken(hash)).toBe(adminUrl);
       fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => ({ redirectUrl: 'https://attacker.test' }),

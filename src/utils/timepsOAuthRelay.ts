@@ -27,9 +27,16 @@ export async function exchangeTimePSIdToken(hash: string): Promise<string | null
   if (!response.ok) throw new Error('TimePS could not verify your Google sign-in.');
   const result = await response.json();
   const redirect = new URL(result.redirectUrl);
+  const extensionReturn =
+    redirect.origin === 'https://kjjmokfjlgabfhkookiedbfhfdehgbcl.chromiumapp.org' &&
+    redirect.pathname === '/oauth2';
+  const adminReturn =
+    redirect.origin === 'https://admin.timeps.buzz' &&
+    redirect.pathname === '/auth/google/callback';
   if (
-    redirect.origin !== 'https://kjjmokfjlgabfhkookiedbfhfdehgbcl.chromiumapp.org' ||
-    redirect.pathname !== '/oauth2' ||
+    (!extensionReturn && !adminReturn) ||
+    redirect.username ||
+    redirect.password ||
     redirect.searchParams.get('state') !== state ||
     (!redirect.searchParams.get('code') && !redirect.searchParams.get('error'))
   ) {

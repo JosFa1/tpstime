@@ -1,6 +1,7 @@
 // Google OAuth Service using redirect flow
 
-import { generateGoogleAuthUrl, getUserInfoFromToken } from '../utils/auth';
+import { getUserInfoFromToken } from '../utils/auth';
+import { startWebsiteGoogleSignIn } from '../utils/websiteOAuth';
 
 interface GoogleUser {
   email: string;
@@ -36,17 +37,10 @@ class GoogleAuthService {
   /**
    * Redirect to Google authentication page
    */
-  signIn(): void {
-    try {
-      // Clear any previous auth data before starting new flow
-      localStorage.removeItem('auth_code');
-      
-      const authUrl = generateGoogleAuthUrl();
-      console.log('Redirecting to Google auth:', authUrl);
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('Failed to initiate Google sign-in:', error);
-    }
+  async signIn(): Promise<void> {
+    localStorage.removeItem('auth_code');
+    const authUrl = await startWebsiteGoogleSignIn();
+    window.location.assign(authUrl);
   }
 
   /**
