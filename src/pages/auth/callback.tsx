@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import GoogleAuthService from '../../services/GoogleAuthService';
-import { extractTokenFromUrl, exchangeCodeForToken } from '../../utils/auth';
 import { buildTimePSOAuthRelayUrl, exchangeTimePSIdToken } from '../../utils/timepsOAuthRelay';
-import { finishWebsiteGoogleSignIn } from '../../utils/websiteOAuth';
+import { finishWebsiteGoogleSignIn, WebsiteFlowLostError } from '../../utils/websiteOAuth';
+import GoogleAuthService from '../../services/GoogleAuthService';
+
+const RETRY_KEY = 'tpstime.website.google-retry';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const OAuthCallback: React.FC = () => {
       try {
         const websiteUser = await finishWebsiteGoogleSignIn();
         if (websiteUser) {
+          sessionStorage.removeItem(RETRY_KEY);
           login(websiteUser);
           navigate('/', { replace: true });
           return;
@@ -37,98 +39,24 @@ const OAuthCallback: React.FC = () => {
           window.location.replace(timepsRelay);
           return;
         }
-        // Check URL for code or token
-        const query = new URLSearchParams(window.location.search);
-        const code = query.get('code');
-        
-        if (code) {
-          console.log('Found authorization code, exchanging for token');
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Exchange code for token
-          const token = await exchangeCodeForToken(code);
-          if (!token) {
-            const msg = 'Failed to exchange authorization code for token';
-            setError(msg);
-            try { localStorage.setItem('lastAuthError', msg); } catch {}
-            setTimeout(() => navigate('/login?error=1'), 3000);
-            return;
-          }
-          
-          // Process the token
-          const authService = GoogleAuthService.getInstance();
-          const result = await authService.handleRedirectResponse(token);
-          
-          if (result.success && result.user) {
-            console.log('Authentication successful, redirecting to home');
-            login(result.user);
-            // Use a slight delay to ensure state is updated
-            setTimeout(() => navigate('/', { replace: true }), 100);
-          } else {
-            const msg = result.error || 'Authentication failed';
-            setError(msg);
-            try { localStorage.setItem('lastAuthError', msg); } catch {}
-            setTimeout(() => navigate('/login?error=1'), 3000);
-          }
-          return;
-        }
-        
-        // If no code, check for token in fragment
-        const { accessToken, error: urlError } = extractTokenFromUrl();
-        
-        if (urlError) {
-          console.error('Authentication error from URL:', urlError);
-          const msg = `Authentication error: ${urlError}`;
-          setError(msg);
-          try { localStorage.setItem('lastAuthError', msg); } catch {}
-          setTimeout(() => navigate('/login?error=1'), 3000);
-          return;
-        }
-        
-        if (!accessToken) {
-          console.log('No token found - checking localStorage for recent auth');
-          // Check if we have a token in localStorage already (from a previous auth)
-          const storedToken = localStorage.getItem('accessToken');
-          if (storedToken) {
-            console.log('Found stored token, attempting to use it');
-            const authService = GoogleAuthService.getInstance();
-            const result = await authService.handleRedirectResponse(storedToken);
-            
-            if (result.success && result.user) {
-              console.log('Successfully authenticated with stored token');
-              login(result.user);
-              // Use a slight delay to ensure state is updated
-              setTimeout(() => navigate('/', { replace: true }), 100);
-              return;
-            }
-          }
-          
-          const msg = 'Authentication failed - no access token received';
-          setError(msg);
-          try { localStorage.setItem('lastAuthError', msg); } catch {}
-          setTimeout(() => navigate('/login?error=1'), 3000);
-          return;
-        }
-        
-        console.log('Found access token, processing...');
-        const authService = GoogleAuthService.getInstance();
-        const result = await authService.handleRedirectResponse(accessToken);
-        
-        if (result.success && result.user) {
-          console.log('Authentication successful, redirecting to home');
-          login(result.user);
-          // Use a slight delay to ensure state is updated
-          setTimeout(() => navigate('/', { replace: true }), 100);
-        } else {
-          const msg = result.error || 'Authentication failed';
-          setError(msg);
-          try { localStorage.setItem('lastAuthError', msg); } catch {}
-          setTimeout(() => navigate('/login?error=1'), 3000);
-        }
+        // Only verified server-side flows can sign in. Raw codes or tokens are never trusted here.
+        const msg = 'Sign-in could not be verified. Start Google sign-in again.';
+        setError(msg);
+        try { localStorage.setItem('lastAuthError', msg); } catch {}
+        setTimeout(() => navigate('/login?error=1'), 3000);
       } catch (err) {
+        // Google returned to a tab or profile that never started this flow. Restart once from here;
+        // the user is now signed into Google in this context, so the second pass completes.
+        if (err instanceof WebsiteFlowLostError && !sessionStorage.getItem(RETRY_KEY)) {
+          sessionStorage.setItem(RETRY_KEY, '1');
+          try {
+            await GoogleAuthService.getInstance().signIn();
+            return;
+          } catch {}
+        }
+        sessionStorage.removeItem(RETRY_KEY);
         console.error('OAuth callback error:', err);
-        const msg = 'An unexpected error occurred during authentication';
+        const msg = err instanceof Error && err.message ? err.message : 'An unexpected error occurred during authentication';
         setError(msg);
         try { localStorage.setItem('lastAuthError', msg); } catch {}
         setTimeout(() => navigate('/login?error=1'), 3000);

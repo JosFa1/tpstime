@@ -16,7 +16,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   
   useEffect(() => {
     // Check for token in localStorage
-    const hasToken = !!localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken');
+    const hasToken = !!token && !token.startsWith('mock_token_');
     const hasUserEmail = !!localStorage.getItem('userEmail');
     
     // Consider locally authenticated if we have token and email

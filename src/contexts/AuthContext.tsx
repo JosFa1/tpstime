@@ -24,8 +24,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for stored user data on mount
     const storedUser = localStorage.getItem('user');
     const accessToken = localStorage.getItem('accessToken');
-    
-    if (storedUser && accessToken) {
+
+    // Sessions from the removed mock sign-in were never verified.
+    if (accessToken?.startsWith('mock_token_')) {
+      ['user', 'accessToken', 'userEmail', 'userName', 'userPicture'].forEach(key => localStorage.removeItem(key));
+    } else if (storedUser && accessToken) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {

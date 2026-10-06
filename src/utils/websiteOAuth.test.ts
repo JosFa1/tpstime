@@ -1,4 +1,4 @@
-import { finishWebsiteGoogleSignIn, startWebsiteGoogleSignIn } from './websiteOAuth';
+import { finishWebsiteGoogleSignIn, startWebsiteGoogleSignIn, WebsiteFlowLostError } from './websiteOAuth';
 
 const state = `website_${'a'.repeat(43)}`;
 const flowKey = 'tpstime.website.google-flow.v1';
@@ -9,7 +9,7 @@ describe('verified website login', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
-    sessionStorage.setItem(flowKey, JSON.stringify({ state, verifier: 'v'.repeat(86), createdAt: Date.now() }));
+    localStorage.setItem(flowKey, JSON.stringify({ state, verifier: 'v'.repeat(86), createdAt: Date.now() }));
     window.history.replaceState({}, '', `/auth/callback/#state=${state}&id_token=google.signed.token`);
   });
   afterEach(() => {
@@ -33,16 +33,32 @@ describe('verified website login', () => {
     expect(await finishWebsiteGoogleSignIn()).toEqual({ email: 'student@trinityprep.org', name: 'student' });
     expect(localStorage.getItem('accessToken')).toBe('verified-session');
     expect(JSON.stringify({ ...localStorage, ...sessionStorage })).not.toContain('google.signed.token');
-    expect(sessionStorage.getItem(flowKey)).toBeNull();
+    expect(localStorage.getItem(flowKey)).toBeNull();
     expect(await finishWebsiteGoogleSignIn()).toBeNull();
   });
 
-  it('rejects mismatched or expired state before sending a token', async () => {
+  it('reports a missing or replaced flow as restartable without sending a token', async () => {
     global.fetch = jest.fn();
-    sessionStorage.setItem(flowKey, JSON.stringify({ state: `website_${'b'.repeat(43)}`, verifier: 'v'.repeat(86), createdAt: Date.now() }));
-    await expect(finishWebsiteGoogleSignIn()).rejects.toThrow(/expired|cancelled/);
+    localStorage.removeItem(flowKey);
+    await expect(finishWebsiteGoogleSignIn()).rejects.toThrow(WebsiteFlowLostError);
+    localStorage.setItem(flowKey, JSON.stringify({ state: `website_${'b'.repeat(43)}`, verifier: 'v'.repeat(86), createdAt: Date.now() }));
+    window.history.replaceState({}, '', `/auth/callback/#state=${state}&id_token=google.signed.token`);
+    await expect(finishWebsiteGoogleSignIn()).rejects.toThrow(WebsiteFlowLostError);
     expect(global.fetch).not.toHaveBeenCalled();
-    sessionStorage.setItem(flowKey, JSON.stringify({ state, verifier: 'v'.repeat(86), createdAt: Date.now() - 600001 }));
+  });
+
+  it('treats a Google error as cancelled, not restartable, even without a stored flow', async () => {
+    localStorage.removeItem(flowKey);
+    window.history.replaceState({}, '', `/auth/callback/#state=${state}&error=access_denied`);
+    const error = await finishWebsiteGoogleSignIn().catch(e => e);
+    expect(error).not.toBeInstanceOf(WebsiteFlowLostError);
+    expect(error.message).toMatch(/cancelled/);
+  });
+
+  it('rejects expired state before sending a token', async () => {
+    global.fetch = jest.fn();
+    expect(global.fetch).not.toHaveBeenCalled();
+    localStorage.setItem(flowKey, JSON.stringify({ state, verifier: 'v'.repeat(86), createdAt: Date.now() - 600001 }));
     window.history.replaceState({}, '', `/auth/callback/#state=${state}&id_token=google.signed.token`);
     await expect(finishWebsiteGoogleSignIn()).rejects.toThrow(/expired|cancelled/);
     expect(global.fetch).not.toHaveBeenCalled();
@@ -80,6 +96,6 @@ describe('verified website login', () => {
       return { ok: true, json: async () => ({ state, authorizationUrl: `https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${encodeURIComponent(callback)}&state=${state}&response_type=id_token` }) } as Response;
     });
     expect(await startWebsiteGoogleSignIn()).toContain('https://accounts.google.com/');
-    expect(JSON.parse(sessionStorage.getItem(flowKey)!).state).toBe(state);
+    expect(JSON.parse(localStorage.getItem(flowKey)!).state).toBe(state);
   });
 });
