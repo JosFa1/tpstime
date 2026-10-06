@@ -43,7 +43,7 @@ const Login: React.FC = () => {
       const urlError = params.get('error') || params.get('reason') || params.get('message');
       const storedError = localStorage.getItem('lastAuthError');
       if (urlError || storedError) {
-        setError(decodeURIComponent(urlError || storedError || ''));
+        setError(storedError || decodeURIComponent(urlError || ''));
         setShowHelp(true);
         if (storedError) localStorage.removeItem('lastAuthError');
       }

@@ -5,6 +5,9 @@ const STATE = /^website_[A-Za-z0-9_-]{43}$/;
 
 type WebsiteUser = { email: string; name: string; picture?: string };
 
+/** The callback reached a tab/profile without this flow's verifier; the caller may restart sign-in. */
+export class WebsiteFlowLostError extends Error {}
+
 function record(value: unknown): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new Error('Invalid website sign-in response.');
@@ -29,7 +32,7 @@ function base64Url(bytes: Uint8Array): string {
 }
 
 export async function startWebsiteGoogleSignIn(): Promise<string> {
-  sessionStorage.removeItem(FLOW_KEY);
+  localStorage.removeItem(FLOW_KEY);
   const verifier = base64Url(crypto.getRandomValues(new Uint8Array(64)));
   const challenge = base64Url(new Uint8Array(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)),
@@ -47,7 +50,8 @@ export async function startWebsiteGoogleSignIn(): Promise<string> {
       authorization.searchParams.get('response_type') !== 'id_token') {
     throw new Error('Invalid Google authorization response.');
   }
-  sessionStorage.setItem(FLOW_KEY, JSON.stringify({ state: result.state, verifier, createdAt: Date.now() }));
+  // localStorage, not sessionStorage: Google may return in a new tab or window of this browser.
+  localStorage.setItem(FLOW_KEY, JSON.stringify({ state: result.state, verifier, createdAt: Date.now() }));
   return authorization.toString();
 }
 
@@ -58,10 +62,12 @@ export async function finishWebsiteGoogleSignIn(): Promise<WebsiteUser | null> {
   if (!state?.startsWith('website_')) return null;
   // Clear Google's token before validation or network calls. Persist only the verified session.
   window.history.replaceState({}, document.title, window.location.pathname);
-  const stored = sessionStorage.getItem(FLOW_KEY);
-  sessionStorage.removeItem(FLOW_KEY);
-  if (!stored) throw new Error('Start Google sign-in again from this browser.');
+  const stored = localStorage.getItem(FLOW_KEY);
+  localStorage.removeItem(FLOW_KEY);
+  if (incoming.has('error')) throw new Error('Google sign-in expired or was cancelled. Try again.');
+  if (!stored) throw new WebsiteFlowLostError('Start Google sign-in again from this browser.');
   const flow = record(JSON.parse(stored));
+  if (flow.state !== state) throw new WebsiteFlowLostError('Start Google sign-in again from this browser.');
   const age = typeof flow.createdAt === 'number' ? Date.now() - flow.createdAt : NaN;
   if (!STATE.test(state) || flow.state !== state || typeof flow.verifier !== 'string' ||
       !/^[A-Za-z0-9_-]{43,128}$/.test(flow.verifier) || !Number.isFinite(age) || age < 0 || age > 600000 || incoming.has('error')) {

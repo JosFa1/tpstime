@@ -2,7 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { buildTimePSOAuthRelayUrl, exchangeTimePSIdToken } from '../../utils/timepsOAuthRelay';
-import { finishWebsiteGoogleSignIn } from '../../utils/websiteOAuth';
+import { finishWebsiteGoogleSignIn, WebsiteFlowLostError } from '../../utils/websiteOAuth';
+import GoogleAuthService from '../../services/GoogleAuthService';
+
+const RETRY_KEY = 'tpstime.website.google-retry';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ const OAuthCallback: React.FC = () => {
       try {
         const websiteUser = await finishWebsiteGoogleSignIn();
         if (websiteUser) {
+          sessionStorage.removeItem(RETRY_KEY);
           login(websiteUser);
           navigate('/', { replace: true });
           return;
@@ -41,8 +45,18 @@ const OAuthCallback: React.FC = () => {
         try { localStorage.setItem('lastAuthError', msg); } catch {}
         setTimeout(() => navigate('/login?error=1'), 3000);
       } catch (err) {
+        // Google returned to a tab or profile that never started this flow. Restart once from here;
+        // the user is now signed into Google in this context, so the second pass completes.
+        if (err instanceof WebsiteFlowLostError && !sessionStorage.getItem(RETRY_KEY)) {
+          sessionStorage.setItem(RETRY_KEY, '1');
+          try {
+            await GoogleAuthService.getInstance().signIn();
+            return;
+          } catch {}
+        }
+        sessionStorage.removeItem(RETRY_KEY);
         console.error('OAuth callback error:', err);
-        const msg = 'An unexpected error occurred during authentication';
+        const msg = err instanceof Error && err.message ? err.message : 'An unexpected error occurred during authentication';
         setError(msg);
         try { localStorage.setItem('lastAuthError', msg); } catch {}
         setTimeout(() => navigate('/login?error=1'), 3000);
