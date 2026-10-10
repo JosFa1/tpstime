@@ -2,10 +2,9 @@ import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
 import Weekdays from "../components/weekdays";
 import { WeeklySchedule } from "../types/weekTypes";
-import { getTodayIndex } from "../utils/utils";
 import Schedule from "../components/schedule";
 import { ClassPeriod } from "../types/classPeriod";
-import { ScheduleBlock, useSchedule } from "../hooks/useSchedule";
+import { ScheduleBlock, schoolToday, useSchedule } from "../hooks/useSchedule";
 import { useGlobalClock } from "../hooks/useGlobalClock";
 import { useMemo, useEffect, useState } from "react";
 import React from "react";
@@ -57,23 +56,21 @@ function Home() {
     return () => window.removeEventListener('scheduleTypeChanged', handler);
   }, []);
 
-  // Monday–Friday from the schedule published in the admin panel.
+  // All seven days from the schedule published in the admin panel, like the extension.
   const thisWeek: WeeklySchedule = useMemo(() => {
     const toPeriods = (blocks: ScheduleBlock[]) =>
       [...blocks]
         .sort((a, b) => a.sortOrder - b.sortOrder)
         .map((block) => new ClassPeriod(block.name, block.startTime, block.endTime, Number(block.period) || undefined));
-    return (week?.days ?? []).slice(0, 5).map((day) => ({
+    return (week?.days ?? []).map((day) => ({
       title: day.marker.code,
       schedule: toPeriods(scheduleType === 'MS' && day.msBlocks ? day.msBlocks : day.blocks),
     }));
   }, [week, scheduleType]);
 
-  // Get today's schedule for the global clock
-  const todaysSchedule = useMemo(() => {
-    const todayIndex = getTodayIndex();
-    return thisWeek[todayIndex]?.schedule ?? [];
-  }, [thisWeek]);
+  // Match today by its calendar date, so weekends published as school days show too.
+  const todayIndex = week ? week.days.findIndex((day) => day.date === schoolToday()) : -1;
+  const todaysSchedule = useMemo(() => thisWeek[todayIndex]?.schedule ?? [], [thisWeek, todayIndex]);
 
   // Run global clock to update document title
   useGlobalClock(todaysSchedule);
@@ -141,7 +138,7 @@ function Home() {
         <div className="flex flex-row items-center gap-2">
           <Weekdays
             weeklySchedule={thisWeek}
-            todayIndex={getTodayIndex()}
+            todayIndex={todayIndex}
           />
         </div>
         <div className="flex flex-row items-center gap-2">
