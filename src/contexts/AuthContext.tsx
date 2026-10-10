@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { PUBLISHABLE_KEY, SUPABASE_URL } from '../hooks/useSchedule';
 
 interface User {
   email: string;
@@ -46,10 +47,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    const accessToken = localStorage.getItem('accessToken');
+    // Revoke the session on the server too, so a copied refresh token stops working.
+    if (accessToken) {
+      fetch(`${SUPABASE_URL}/auth/v1/logout?scope=local`, {
+        method: 'POST',
+        headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` },
+        keepalive: true,
+      }).catch(() => {});
+    }
     setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    ['user', 'accessToken', 'refreshToken', 'userEmail', 'userName', 'userPicture', 'loginTimestamp']
+      .forEach(key => localStorage.removeItem(key));
   };
 
   return (

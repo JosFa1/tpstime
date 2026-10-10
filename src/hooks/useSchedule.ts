@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 // Same published schedule the TPSTime extension reads, managed in the admin panel.
-const SUPABASE_URL = "https://bbeswtssigkglspkleyc.supabase.co";
+export const SUPABASE_URL = "https://bbeswtssigkglspkleyc.supabase.co";
 const SCHEDULE_URL = `${SUPABASE_URL}/functions/v1/extension-schedule`;
-// Publishable key: public by design, only used to renew the signed-in session.
-const PUBLISHABLE_KEY = "sb_publishable_gsu7MkBFYTqUGYzXvgdkow_yUT6P9Dy";
+// Publishable key: public by design, only used to renew and revoke the signed-in session.
+export const PUBLISHABLE_KEY = "sb_publishable_gsu7MkBFYTqUGYzXvgdkow_yUT6P9Dy";
 
 export type ScheduleBlock = {
   name: string;
