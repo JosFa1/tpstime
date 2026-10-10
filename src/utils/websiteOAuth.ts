@@ -105,6 +105,8 @@ export async function finishWebsiteGoogleSignIn(): Promise<WebsiteUser | null> {
   };
   // Preserve the website's existing session/profile storage contract.
   localStorage.setItem('accessToken', session.access_token);
+  if (typeof session.refresh_token === 'string') localStorage.setItem('refreshToken', session.refresh_token);
+  else localStorage.removeItem('refreshToken');
   localStorage.setItem('loginTimestamp', Date.now().toString());
   localStorage.setItem('userEmail', websiteUser.email);
   localStorage.setItem('userName', websiteUser.name);

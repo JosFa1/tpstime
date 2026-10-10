@@ -1,7 +1,5 @@
 import { ClassPeriod } from "../types/classPeriod";
 import { ClassName } from "../types/className";
-import { aSchedule, bSchedule, cSchedule } from "../types/schedule";
-import { WeeklySchedule } from "../types/weekTypes";
 
 export function getTodayIndex(): number {
   const jsDay = new Date().getDay(); // 0 (Sun) - 6 (Sat)
@@ -29,42 +27,6 @@ export function getFormattedDate(date: Date): string {
       ? "rd"
       : "th";
   return `${month} ${day}${suffix}`;
-}
-
-export function getTimeLeftInPeriod(): string {
-  const now = new Date();
-  const todayIndex = getTodayIndex();
-
-  if (todayIndex === -1) return "No class in session";
-  
-  const ADay = { title: "A", schedule: aSchedule };
-  const BDay = { title: "B", schedule: bSchedule };
-  const CDAY = { title: "C", schedule: cSchedule };
-  const thisWeek: WeeklySchedule = [ADay, ADay, BDay, CDAY, ADay];
-
-  const currentPeriod = thisWeek[todayIndex].schedule.find((period) => {
-    const start = new Date();
-    const [startHour, startMinute] = period.start.split(":").map(Number);
-    start.setHours(startHour, startMinute, 0, 0);
-
-    const end = new Date();
-    const [endHour, endMinute] = period.end.split(":").map(Number);
-    end.setHours(endHour, endMinute, 0, 0);
-
-    return now >= start && now < end;
-  });
-
-  if (!currentPeriod) return "No class in session";
-
-  const end = new Date();
-  const [endHour, endMinute] = currentPeriod.end.split(":").map(Number);
-  end.setHours(endHour, endMinute, 0, 0);
-
-  const timeLeft = end.getTime() - now.getTime();
-  const minutesLeft = Math.ceil(timeLeft / (1000 * 60))-1;
-  const secondsLeft = Math.ceil((timeLeft % (1000 * 60)) / 1000);
-
-  return `${minutesLeft}:${secondsLeft < 10 ? "0" : ""}${secondsLeft}`;
 }
 
 export function convertTo12Hour(time24: string): string {

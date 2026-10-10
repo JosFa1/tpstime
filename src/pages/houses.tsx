@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
+import { useSchedule } from "../hooks/useSchedule";
 
 // Import house logos
 import house1Logo from "../assets/HouseLogos/Eagle.png";
@@ -16,18 +17,32 @@ type House = {
   score: number;
 };
 
-const initialHouses: House[] = [
-  { id: "house1", name: "Hay", score: 85 },
-  { id: "house2", name: "Maughan", score: 55 },
-  { id: "house3", name: "Lawson", score: 105 },
-  { id: "house4", name: "St. John", score: 110 },
-  { id: "house5", name: "Ellis", score: 155 },
-  { id: "house6", name: "Brokaw", score: 245 },
+// House points are published from the admin panel as house quick links (points = sortOrder),
+// matched the same way as the TPSTime extension.
+const HOUSES = [
+  { id: "house1", key: "hay", name: "Hay" },
+  { id: "house2", key: "maughan", name: "Maughan" },
+  { id: "house3", key: "lawson", name: "Lawson" },
+  { id: "house4", key: "st-john", name: "St. John" },
+  { id: "house5", key: "ellis", name: "Ellis" },
+  { id: "house6", key: "brokaw", name: "Brokaw" },
 ];
 
+const normalized = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const Houses: React.FC = () => {
-  const [houses] = useState<House[]>(initialHouses);
+  const { week, error } = useSchedule();
+
+  const houses: House[] = useMemo(
+    () =>
+      HOUSES.map((house) => {
+        const link = week?.quickLinks.find(
+          (item) => item.icon === `house:${house.key}` || normalized(item.label) === normalized(house.name)
+        );
+        return { id: house.id, name: house.name, score: Math.max(0, Math.round(link?.sortOrder ?? 0)) };
+      }),
+    [week]
+  );
 
   // Logo mapping
   const houseLogos: Record<string, string> = {
@@ -54,7 +69,10 @@ const Houses: React.FC = () => {
         <div className="pt-2 max-w-4xl w-full mx-auto px-4">
           <h1 className="text-2xl font-semibold text-center mb-6 text-text">House Rankings</h1>
 
-          <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          {!week && (
+            <p className="text-center text-text-secondary">{error ?? "Loading house points..."}</p>
+          )}
+          {week && <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {ranked.map((house, idx) => (
               <div key={house.id} className="bg-surface border-2 border-accent rounded-lg px-3 py-2 flex items-center justify-between hover:bg-accent transition-colors">
                 <div className="flex items-center gap-3">
@@ -70,7 +88,7 @@ const Houses: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div>}
         </div>
       </main>
 

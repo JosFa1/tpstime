@@ -1,61 +1,92 @@
-import { useState, useEffect } from "react";
-// Pull in shared API helper so all network requests are centralized
+import { useEffect, useState } from "react";
 
-interface UseScheduleReturn {
-  schedule: any;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
+// Same published schedule the TPSTime extension reads, managed in the admin panel.
+const SUPABASE_URL = "https://bbeswtssigkglspkleyc.supabase.co";
+const SCHEDULE_URL = `${SUPABASE_URL}/functions/v1/extension-schedule`;
+// Publishable key: public by design, only used to renew the signed-in session.
+const PUBLISHABLE_KEY = "sb_publishable_gsu7MkBFYTqUGYzXvgdkow_yUT6P9Dy";
+
+export type ScheduleBlock = {
+  name: string;
+  period?: string;
+  startTime: string;
+  endTime: string;
+  sortOrder: number;
+};
+
+export type PublishedDay = {
+  date: string;
+  marker: { code: string; name: string; isSchoolDay: boolean };
+  blocks: ScheduleBlock[];
+  msBlocks?: ScheduleBlock[];
+};
+
+export type QuickLink = { label: string; icon?: string; sortOrder: number };
+
+export type PublishedWeek = { days: PublishedDay[]; quickLinks: QuickLink[] };
+
+/** Monday of the current school week (America/New_York) as YYYY-MM-DD. */
+export function currentMonday(now = new Date()): string {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(now);
+  const date = new Date(`${today}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+  return date.toISOString().slice(0, 10);
 }
 
-export function useSchedule(): UseScheduleReturn {
-  // Store the schedule data returned from the backend
-  const [schedule, setSchedule] = useState<any>(null);
-  // Whether a request is in flight; used to show loading states
-  const [loading, setLoading] = useState(false);
-  // Holds any error messages from failed requests
+async function renewSession(): Promise<boolean> {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) return false;
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+    method: "POST",
+    headers: { apikey: PUBLISHABLE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  });
+  if (!response.ok) return false;
+  const session = await response.json();
+  if (typeof session.access_token !== "string" || typeof session.refresh_token !== "string") return false;
+  localStorage.setItem("accessToken", session.access_token);
+  localStorage.setItem("refreshToken", session.refresh_token);
+  return true;
+}
+
+function signOutToLogin() {
+  ["user", "accessToken", "refreshToken"].forEach((key) => localStorage.removeItem(key));
+  window.location.assign("/login");
+}
+
+async function fetchWeek(): Promise<PublishedWeek> {
+  const request = () =>
+    fetch(`${SCHEDULE_URL}?week=${currentMonday()}&divisions=1`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}` },
+    });
+  let response = await request();
+  if (response.status === 401) {
+    if (!(await renewSession())) {
+      signOutToLogin();
+      throw new Error("Your session expired. Please sign in again.");
+    }
+    response = await request();
+  }
+  if (!response.ok) throw new Error("The schedule could not be loaded.");
+  return response.json();
+}
+
+export function useSchedule() {
+  const [week, setWeek] = useState<PublishedWeek | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Retrieve the class schedule from the backend API.
-   * Errors are caught and stored so the UI can react accordingly.
-   */
-  const fetchSchedule = async () => {
-    // Indicate that a request is in progress
-    setLoading(true);
-    setError(null);
-
-    try {
-      const accessToken = localStorage.getItem('accessToken');
-      const headers: Record<string, string> = {};
-      
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-
-      // Request `/schedule` from the backend. The helper handles
-      // base URL prefixing and JSON validation.
-      // Persist the schedule so components can render it
-    } catch (err) {
-      // Gracefully surface errors to any components using this hook
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch schedule";
-      setError(errorMessage);
-      console.error("[useSchedule] Error fetching schedule:", err);
-    } finally {
-      // Always clear the loading state once the request resolves
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchSchedule();
+    let active = true;
+    fetchWeek()
+      .then((data) => active && setWeek(data))
+      .catch((err) => {
+        console.error("[useSchedule] Error fetching schedule:", err);
+        if (active) setError(err instanceof Error ? err.message : "The schedule could not be loaded.");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  return {
-    schedule,
-    loading,
-    error,
-    refetch: fetchSchedule,
-  };
+  return { week, loading: !week && !error, error };
 }
