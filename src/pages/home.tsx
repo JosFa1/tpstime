@@ -1,13 +1,11 @@
 import Clock from "../components/clock";
 import ClockDescription from "../components/clockDescription";
-import { aSchedule, bSchedule, cSchedule, sSchedule, NSchedule, iSchedule } from "../types/schedule";
-import { msASchedule, msBSchedule, msCSchedule, msSSchedule } from "../types/msSchedule";
 import Weekdays from "../components/weekdays";
 import { WeeklySchedule } from "../types/weekTypes";
-import { getTodayIndex, mapScheduleWithClassNames } from "../utils/utils";
+import { getTodayIndex } from "../utils/utils";
 import Schedule from "../components/schedule";
-import { ClassName } from "../types/className";
-import { useSchedule } from "../hooks/useSchedule";
+import { ClassPeriod } from "../types/classPeriod";
+import { ScheduleBlock, useSchedule } from "../hooks/useSchedule";
 import { useGlobalClock } from "../hooks/useGlobalClock";
 import { useMemo, useEffect, useState } from "react";
 import React from "react";
@@ -49,7 +47,7 @@ function Home() {
     const saved = localStorage.getItem('scheduleType');
     return saved === 'MS' ? 'MS' : 'US';
   });
-  const { schedule, loading } = useSchedule();
+  const { week, error } = useSchedule();
 
   React.useEffect(() => {
     const handler = (e: any) => {
@@ -59,72 +57,23 @@ function Home() {
     return () => window.removeEventListener('scheduleTypeChanged', handler);
   }, []);
 
-  // US schedule
-  const ADayUS = { title: "A", schedule: aSchedule };
-  const BDayUS = { title: "B", schedule: bSchedule };
-  const CDayUS = { title: "C", schedule: cSchedule };
-  const SDayUS = { title: "A", schedule: sSchedule };
-  const IDayUS = { title: "I", schedule: iSchedule };
-  // MS schedule
-  const ADayMS = { title: "A", schedule: msASchedule };
-  const BDayMS = { title: "B", schedule: msBSchedule };
-  const CDayMS = { title: "C", schedule: msCSchedule };
-  const SDayMS = { title: "A", schedule: msSSchedule };
-
-  const NSDay = { title: "N", schedule: NSchedule }; // Universal no school
-
-  const defaultClassNames: ClassName[] = useMemo(() => [
-    { name: "Period 1", period: 1 },
-    { name: "Period 2", period: 2 },
-    { name: "Period 3", period: 3 },
-    { name: "Period 4", period: 4 },
-    { name: "Period 5", period: 5 },
-    { name: "Period 6", period: 6 },
-    { name: "Period 7", period: 7 },
-  ], []);
-
-  const classNames: ClassName[] = useMemo(() => {
-    if (
-      loading ||
-      !schedule ||
-      !Array.isArray(schedule) ||
-      schedule.length === 0
-    ) {
-      return defaultClassNames;
-    }
-
-    const dbClassNames: ClassName[] = schedule.map((item: any) => ({
-      name: item.subject || `Period ${item.period}`,
-      period: item.period,
+  // Monday–Friday from the schedule published in the admin panel.
+  const thisWeek: WeeklySchedule = useMemo(() => {
+    const toPeriods = (blocks: ScheduleBlock[]) =>
+      [...blocks]
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((block) => new ClassPeriod(block.name, block.startTime, block.endTime, Number(block.period) || undefined));
+    return (week?.days ?? []).slice(0, 5).map((day) => ({
+      title: day.marker.code,
+      schedule: toPeriods(scheduleType === 'MS' && day.msBlocks ? day.msBlocks : day.blocks),
     }));
-
-    const periodMap = new Map<number, string>();
-    dbClassNames.forEach((className) => {
-      if (className.period) {
-        periodMap.set(
-          className.period,
-          className.name || `Period ${className.period}`
-        );
-      }
-    });
-
-    return defaultClassNames.map((defaultClass) => ({
-      name: periodMap.get(defaultClass.period!) || defaultClass.name,
-      period: defaultClass.period,
-    }));
-  }, [schedule, loading, defaultClassNames]);
-
-  // Weekly pattern: A, A, B, C, A
-  const thisWeek: WeeklySchedule = scheduleType === 'US'
-    ? [ADayUS, ADayUS, BDayUS, CDayUS, ADayUS]
-    : [ADayUS, ADayMS, BDayMS, CDayMS, ADayMS];
+  }, [week, scheduleType]);
 
   // Get today's schedule for the global clock
   const todaysSchedule = useMemo(() => {
     const todayIndex = getTodayIndex();
-    if (todayIndex === -1) return [];
-    return mapScheduleWithClassNames(thisWeek[todayIndex].schedule, classNames);
-  }, [thisWeek, classNames]);
+    return thisWeek[todayIndex]?.schedule ?? [];
+  }, [thisWeek]);
 
   // Run global clock to update document title
   useGlobalClock(todaysSchedule);
@@ -207,9 +156,9 @@ function Home() {
       )}
 
       {/* Main content */}
-      {getTodayIndex() === -1 ? (
+      {todaysSchedule.length === 0 ? (
         <div className="text-secondary w-full min-h-[60vh] flex justify-center items-center text-xl sm:text-2xl">
-          No schedule available for today.
+          {error ?? (week ? "No schedule available for today." : "Loading schedule...")}
         </div>
       ) : (
         <>
@@ -217,27 +166,18 @@ function Home() {
             <div className="flex flex-col items-center w-full max-w-2xl">
               <div className="w-full px-2 sm:px-4 mb-2">
                 <ClockDescription
-                  schedule={mapScheduleWithClassNames(
-                    thisWeek[getTodayIndex()].schedule,
-                    classNames
-                  )}
+                  schedule={todaysSchedule}
                 />
               </div>
               <Clock
-                schedule={mapScheduleWithClassNames(
-                  thisWeek[getTodayIndex()].schedule,
-                  classNames
-                )}
+                schedule={todaysSchedule}
               />
             </div>
           </div>
           <div className="w-full px-2 sm:px-8 pt-0 mt-4 bg-background flex justify-center pb-4">
             <div className="w-full max-w-2xl">
               <Schedule
-                schedule={mapScheduleWithClassNames(
-                  thisWeek[getTodayIndex()].schedule,
-                  classNames
-                )}
+                schedule={todaysSchedule}
               />
             </div>
           </div>
