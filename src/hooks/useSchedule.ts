@@ -25,10 +25,13 @@ export type QuickLink = { label: string; icon?: string; sortOrder: number };
 
 export type PublishedWeek = { days: PublishedDay[]; quickLinks: QuickLink[] };
 
+/** Today's date at school (America/New_York) as YYYY-MM-DD. */
+export const schoolToday = (now = new Date()): string =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(now);
+
 /** Monday of the current school week (America/New_York) as YYYY-MM-DD. */
 export function currentMonday(now = new Date()): string {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(now);
-  const date = new Date(`${today}T00:00:00Z`);
+  const date = new Date(`${schoolToday(now)}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
   return date.toISOString().slice(0, 10);
 }
