@@ -103,7 +103,7 @@ const ExtensionPromo: React.FC = () => {
               onClick={toggleSound}
               className="absolute top-3 left-3 rounded-full bg-black/60 px-3 py-1 text-sm text-white hover:bg-black/80"
             >
-              {muted ? "🔇 Turn on sound" : "🔊 Sound on"}
+              {muted ? "Turn on sound" : "Mute"}
             </button>
           </div>
           <div className="flex items-center gap-4">
@@ -126,7 +126,8 @@ const ExtensionPromo: React.FC = () => {
         <button
           type="button"
           onClick={open}
-          className="fixed bottom-4 right-4 z-40 rounded-full border border-border bg-surface px-4 py-2 text-sm text-text shadow-lg opacity-80 hover:opacity-100"
+          // A fixed color rather than theme tokens so it stands out on every theme.
+          className="fixed bottom-5 right-5 z-40 rounded-full bg-blue-600 px-5 py-3 font-semibold text-white shadow-lg ring-2 ring-white hover:bg-blue-700"
         >
           Get the extension
         </button>

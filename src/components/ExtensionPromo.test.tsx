@@ -33,7 +33,7 @@ it("opens once on a first visit, then only from the button", () => {
 
   renderPromo();
   expect(showModal).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByText("Get the extension"));
+  fireEvent.click(screen.getByText(/Get the extension/));
   expect(showModal).toHaveBeenCalledTimes(2);
 });
 
@@ -41,7 +41,7 @@ it("shows nothing on touch devices", () => {
   window.matchMedia = jest.fn(() => ({ matches: true })) as any;
   renderPromo();
   expect(showModal).not.toHaveBeenCalled();
-  expect(screen.queryByText("Get the extension")).toBeNull();
+  expect(screen.queryByText(/Get the extension/)).toBeNull();
 });
 
 it("waits until the user signs in", () => {
