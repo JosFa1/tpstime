@@ -5,6 +5,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/login";
 import OAuthCallback from './pages/auth/callback';
+import ExtensionPromo from "./components/ExtensionPromo";
 
 // Lazy load protected routes to prevent them from being included in the initial bundle
 const Home = lazy(() => import("./pages/home"));
@@ -75,6 +76,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        <ExtensionPromo />
       </BrowserRouter>
     </AuthProvider>
   );
