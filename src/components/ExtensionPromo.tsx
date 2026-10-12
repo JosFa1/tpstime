@@ -6,7 +6,10 @@ const EXTENSION_ID = "kjjmokfjlgabfhkookiedbfhfdehgbcl";
 const STORE_URL = `https://chromewebstore.google.com/detail/tpstime-extension/${EXTENSION_ID}`;
 // Exposed to tpstime.com only, from extension 6.0.2 on.
 const PROBE_URL = `chrome-extension://${EXTENSION_ID}/icons/icon16.png`;
-const SEEN_KEY = "extensionPromoSeen";
+// Amplify rewrites .mp4 requests to index.html, so the video comes from the public repo via jsDelivr.
+const VIDEO_URL = "https://cdn.jsdelivr.net/gh/JosFa1/tpstime@ad0ac82/public/tpstime_launch.mp4";
+// v2: the first release could not load the video, so show it once more.
+const SEEN_KEY = "extensionPromoSeen2";
 
 // Same check as HamburgerMenu: phones and tablets can't install Chrome extensions.
 const isMobile = () =>
@@ -87,7 +90,7 @@ const ExtensionPromo: React.FC = () => {
           <div className="relative">
             <video
               ref={videoRef}
-              src="/tpstime_launch.mp4"
+              src={VIDEO_URL}
               muted
               playsInline
               controls

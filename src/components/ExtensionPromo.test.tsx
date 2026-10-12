@@ -29,7 +29,7 @@ beforeEach(() => {
 it("opens once on a first visit, then only from the button", () => {
   renderPromo().unmount();
   expect(showModal).toHaveBeenCalledTimes(1);
-  expect(localStorage.getItem("extensionPromoSeen")).toBe("1");
+  expect(localStorage.getItem("extensionPromoSeen2")).toBe("1");
 
   renderPromo();
   expect(showModal).toHaveBeenCalledTimes(1);
@@ -48,5 +48,5 @@ it("waits until the user signs in", () => {
   mockSignedIn = false;
   renderPromo();
   expect(showModal).not.toHaveBeenCalled();
-  expect(localStorage.getItem("extensionPromoSeen")).toBeNull();
+  expect(localStorage.getItem("extensionPromoSeen2")).toBeNull();
 });
