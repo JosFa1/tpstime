@@ -126,8 +126,8 @@ const ExtensionPromo: React.FC = () => {
         <button
           type="button"
           onClick={open}
-          // A fixed color rather than theme tokens so it stands out on every theme.
-          className="fixed bottom-5 right-5 z-40 rounded-full bg-blue-600 px-5 py-3 font-semibold text-white shadow-lg ring-2 ring-white hover:bg-blue-700"
+          // The theme's primary color with a ring offset from the page, so it pops on every theme.
+          className="fixed bottom-5 right-5 z-40 rounded-full bg-primary px-5 py-3 font-semibold text-background shadow-lg ring-2 ring-primary ring-offset-2 ring-offset-background hover:opacity-90"
         >
           Get the extension
         </button>
