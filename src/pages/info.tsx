@@ -14,6 +14,7 @@ const Info: React.FC = () => {
             <li><strong>Created By:</strong> James Hawley</li>
             <li><strong>Development Team:</strong> Joe Borgman and Asad Sadikov</li>
             <li><strong>Assistant Developer:</strong> Ryo Kimura</li>
+            <li><strong>Extension Developer:</strong> Jason Wang</li>
             <li><strong>Project Sponsors:</strong> Alex Podchaski and Tim Eischens</li>
           </ul>
         </section>

@@ -120,6 +120,7 @@ const ExtensionPromo: React.FC = () => {
               Skip
             </button>
           </div>
+          <p className="text-xs text-text-secondary opacity-70">Extension by Jason Wang</p>
         </div>
       </dialog>
       {!installed && (
