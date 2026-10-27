@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import GoogleAuthService from '../services/GoogleAuthService';
+import { localPreview } from '../localPreview';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Login: React.FC = () => {
   const wifiCheckUrl = process.env.REACT_APP_WIFI_CHECK_URL || '';
 
   useEffect(() => {
-    if (!enableAuth) {
+    if (!enableAuth || localPreview) {
       // Auth disabled - redirect straight to home
       navigate('/', { replace: true });
       return;

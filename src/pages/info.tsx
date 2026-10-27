@@ -3,16 +3,17 @@ import HamburgerMenu from "../components/HamburgerMenu";
 import FooterNote from "../components/FooterNote";
 
 const Info: React.FC = () => {
-  const [showPopup, setShowPopup] = React.useState<null | '1.0' | '2.0' | '2.1'>(null);
+  const [showPopup, setShowPopup] = React.useState<null | '1.0' | '2.0' | '2.1' | '3.0'>(null);
   return (
-    <div className="min-h-screen flex bg-background text-text">
-      <div className="pt-2 max-w-2xl w-full mx-auto">
+    <div className="w-full flex bg-background text-text">
+      <div className="pt-2 max-w-2xl w-full mx-auto px-4">
         <h1 className="text-2xl font-bold mb-4">Project Information</h1>
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Team</h2>
           <ul className="list-disc ml-6">
             <li><strong>Created By:</strong> James Hawley</li>
-            <li><strong>Development Team:</strong> Joe Borgman and Asad Sadikov</li>
+            <li><strong>Development Team:</strong> Joe Borgman, Asad Sadikov, and Jason Wang</li>
+            <li><strong>Extension Developer:</strong> Jason Wang</li>
             <li><strong>Assistant Developer:</strong> Ryo Kimura</li>
             <li><strong>Project Sponsors:</strong> Alex Podchaski and Tim Eischens</li>
           </ul>
@@ -53,7 +54,30 @@ const Info: React.FC = () => {
                 v- 2.1 - Borgman J. and Sadikov A.
               </button>
             </li>
+            <li>
+              <button className="underline text-primary hover:text-secondary focus:outline-none" onClick={() => setShowPopup('3.0')}>
+                v- 3.0 - Jason Wang
+              </button>
+            </li>
           </ul>
+          {showPopup === '3.0' && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="changelog-v3-title" onKeyDown={event => { if (event.key === 'Escape') setShowPopup(null); }}>
+              <div className="bg-surface rounded-lg shadow-lg p-6 max-w-md w-full text-text relative max-h-[90vh] overflow-y-auto">
+                <button autoFocus aria-label="Close changelog" className="absolute top-2 right-2 text-xl font-bold" onClick={() => setShowPopup(null)}>&times;</button>
+                <h3 id="changelog-v3-title" className="text-xl font-bold mb-2">Version 3.0</h3>
+                <p className="mb-3">Made by Jason Wang</p>
+                <ul className="list-disc ml-6 space-y-2">
+                  <li>Redesigned the timer, schedule, navigation, and Grille menu for desktop and mobile.</li>
+                  <li>Added Lightning Alert to the main navigation.</li>
+                  <li>Added a mini timer and progress bar on other pages, with a setting to hide it.</li>
+                  <li>Added personal class names, display preferences, and accessibility options in Settings.</li>
+                  <li>Reorganized theme selection with a live preview, preset themes, and simplified color controls.</li>
+                  <li>Added house ranking movement and an interactive graph of published points over time.</li>
+                  <li>Connected schedules and house points to published school data and improved loading states.</li>
+                </ul>
+              </div>
+            </div>
+          )}
           {showPopup === '1.0' && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
               <div className="bg-surface rounded-lg shadow-lg p-6 max-w-md w-full text-text relative">

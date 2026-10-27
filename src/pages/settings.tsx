@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { ChevronDown } from 'lucide-react';
 import LogButton from "../components/logButton";
 import HamburgerMenu from "../components/HamburgerMenu";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 import FooterNote from "../components/FooterNote";
+import { usePreferences } from "../preferences";
+import { useSchedule } from "../hooks/useSchedule";
+import "./settings.css";
+import { RequestError } from '../components/Loading';
+import { localPreview } from '../localPreview';
 
 function Settings() {
+  const [prefs, setPrefs] = usePreferences();
+  const { week, loading, error, refreshing, reload } = useSchedule();
   const [showProgressBar, setShowProgressBar] = useState(() => {
     const saved = localStorage.getItem("showProgressBar");
-    return saved === "true";
+    return saved !== "false";
   });
 
   useEffect(() => {
@@ -29,43 +37,34 @@ function Settings() {
           <HamburgerMenu />
         </div>
       </div>
-      {/* Main content */}
-      <div className="flex flex-col items-center justify-center w-full bg-background px-2 py-6 sm:p-8">
-        <div className="w-full max-w-md space-y-6">
-          <h1 className="text-2xl sm:text-3xl mb-8 text-text text-center">Settings</h1>
-          
-          {/* Theme selection always available */}
-          <ThemeSwitcher />
-          
-          <div className="flex items-center justify-between">
-            <label htmlFor="progress-bar-toggle" className="text-text text-lg">
-              Show Progress Bar
-            </label>
-            <button
-              id="progress-bar-toggle"
-              onClick={() => setShowProgressBar((s) => !s)}
-              aria-pressed={showProgressBar}
-              className="px-3 py-1 rounded-full border transition-colors duration-200 flex items-center gap-2"
-              style={{
-                backgroundColor: showProgressBar ? 'var(--color-primary)' : 'transparent',
-                color: showProgressBar ? 'var(--color-surface)' : 'var(--color-text)'
-              }}
-            >
-              <span
-                className="inline-block h-3 w-3 rounded-full transform transition-transform"
-                style={{
-                  backgroundColor: showProgressBar ? 'var(--color-surface)' : 'var(--color-border)',
-                }}
-              />
-              <span className="text-sm">{showProgressBar ? 'On' : 'Off'}</span>
-            </button>
-          </div>
-          
-          <div className="flex justify-center">
-            <LogButton />
-          </div>
-        </div>
-      </div>
+      <main className="settings-layout">
+        <header className="settings-title"><h1>Settings</h1></header>
+        {error && <RequestError message={error} pending={refreshing} retry={reload} retained={Boolean(week)} />}
+        <ThemeSwitcher themes={week?.themes ?? []} loading={loading} />
+        {!localPreview && !loading && !error && week && !week.themes?.some(theme => theme.isEnabled) && <p className="settings-note">No school themes have been published. Your other themes are still available.</p>}
+
+        <section className="settings-card settings-preferences">
+          <div className="settings-section-heading"><h2>My classes</h2><p>Names are saved on this device.</p></div>
+          <div className="settings-periods">{Object.entries(prefs.personalNames).map(([period, name]) => <label key={period}>Period {period}<input value={name} maxLength={40} placeholder={`Period ${period}`} onChange={e => setPrefs(p => ({ ...p, personalNames: { ...p.personalNames, [period]: e.target.value } }))} /></label>)}</div>
+          <p className="settings-note">Leave a name blank to use the school's official label.</p>
+        </section>
+
+        <section className="settings-card settings-preferences">
+          <div className="settings-section-heading"><h2>Display</h2></div>
+          <label className="settings-row">Default tab <select value={prefs.defaultTab} onChange={e => setPrefs(p => ({ ...p, defaultTab: e.target.value as typeof p.defaultTab }))}><option value="timer">Timer</option><option value="schedule">Schedule</option><option value="lightning">Lightning Alert</option></select></label>
+          <label className="settings-row">Show mini timer <input type="checkbox" checked={prefs.showMiniTimer} onChange={e => setPrefs(p => ({ ...p, showMiniTimer: e.target.checked }))} /></label>
+          <label className="settings-row">Show progress bar <input type="checkbox" checked={showProgressBar} onChange={e => setShowProgressBar(e.target.checked)} /></label>
+          <details className="settings-disclosure">
+            <summary>Advanced display options <ChevronDown size={20} aria-hidden="true" /></summary>
+            <label className="settings-row">Time format <select value={prefs.timeFormat} onChange={e => setPrefs(p => ({ ...p, timeFormat: e.target.value as '12h' | '24h' }))}><option value="12h">12 hour</option><option value="24h">24 hour</option></select></label>
+            <label className="settings-row">Show seconds <input type="checkbox" checked={prefs.showSeconds} onChange={e => setPrefs(p => ({ ...p, showSeconds: e.target.checked }))} /></label>
+            <label className="settings-row">Dyslexia-friendly font <input type="checkbox" checked={prefs.dyslexicFont} onChange={e => setPrefs(p => ({ ...p, dyslexicFont: e.target.checked }))} /></label>
+            <label className="settings-row">Reduce motion <input type="checkbox" checked={prefs.reduceMotion} onChange={e => setPrefs(p => ({ ...p, reduceMotion: e.target.checked }))} /></label>
+            <p className="settings-note">Your device's reduced-motion preference is always respected.</p>
+          </details>
+        </section>
+        <div className="settings-signout"><LogButton /></div>
+      </main>
     </div>
   );
 }

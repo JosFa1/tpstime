@@ -34,6 +34,7 @@ interface ThemeContextType {
   savedThemes: CustomTheme[];
   selectedCustomThemeId: string | null;
   selectCustomTheme: (id: string) => void;
+  selectPublishedTheme: (id: string, name: string, vars: ThemeVars) => void;
   addCustomTheme: (name?: string, base?: Partial<ThemeVars>) => string; // returns new id
   renameCustomTheme: (id: string, name: string) => void;
   deleteCustomTheme: (id: string) => void;
@@ -66,14 +67,14 @@ const lightBase: ThemeVars = {
 };
 
 const darkBase: ThemeVars = {
-  'color-primary': '#90caf9',
-  'color-secondary': '#cbcbcb',
-  'color-accent': '#b3e5fc',
-  'color-background': '#181A20',
-  'color-surface': '#23272F',
-  'color-text': '#cbcbcb',
-  'color-text-secondary': '#b0b0b0',
-  'color-border': '#333A47',
+  'color-primary': '#bb86fc',
+  'color-secondary': '#bb86fc',
+  'color-accent': '#bb86fc',
+  'color-background': '#121212',
+  'color-surface': '#1e1e1e',
+  'color-text': '#e0e0e0',
+  'color-text-secondary': '#a0a0a0',
+  'color-border': '#383838',
   'color-error': '#ff6464',
   'color-warning': '#ffae00',
   'color-success': '#10c50d',
@@ -212,7 +213,7 @@ function clearInlineVars() {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Load from storage
   const [mode, setModeState] = useState<ThemeMode>(() => {
-    const saved = (localStorage.getItem(LS_KEYS.MODE) as ThemeMode) || 'dark';
+    const saved = (localStorage.getItem(LS_KEYS.MODE) as ThemeMode) || 'custom';
     return saved;
   });
 
@@ -246,6 +247,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Apply mode and variables to document
   useEffect(() => {
     const root = document.documentElement;
+    root.setAttribute('data-custom-theme', mode === 'custom' ? selectedCustomTheme?.id ?? '' : '');
+    const updateThemeColor = (color: string) => document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+    updateThemeColor(currentVars['color-background']);
     // reset base attributes
     root.classList.remove('dark');
     root.removeAttribute('data-theme');
@@ -268,6 +272,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
           root.setAttribute('data-theme', 'light');
         }
         clearInlineVars();
+        updateThemeColor((mq.matches ? darkBase : lightBase)['color-background']);
       };
       apply();
       const handler = () => apply();
@@ -280,7 +285,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.setAttribute('data-theme', 'custom');
       applyVars(currentVars);
     }
-  }, [mode, currentVars]);
+  }, [mode, currentVars, selectedCustomTheme?.id]);
 
   // Persist
   useEffect(() => {
@@ -301,6 +306,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const selectCustomTheme = useCallback((id: string) => {
     setSelectedCustomThemeId(id);
+    setModeState('custom');
+  }, []);
+
+  const selectPublishedTheme = useCallback((id: string, name: string, vars: ThemeVars) => {
+    const theme = { id: `published-${id}`, name, vars };
+    setSavedThemes(prev => [...prev.filter(item => item.id !== theme.id), theme]);
+    setSelectedCustomThemeId(theme.id);
     setModeState('custom');
   }, []);
 
@@ -333,7 +345,26 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const updateVar = useCallback((key: ThemeVarKey, value: string) => {
     if (!selectedCustomTheme) return;
-    setSavedThemes((prev) => prev.map(t => (t.id === selectedCustomTheme.id ? { ...t, vars: { ...t.vars, [key]: value } } : t)));
+    setSavedThemes((prev) => prev.map(t => {
+      if (t.id !== selectedCustomTheme.id) return t;
+      const vars = { ...t.vars, [key]: value };
+      if (key === 'color-primary') { vars['color-secondary'] = value; vars['color-accent'] = value; }
+      if (key === 'color-text' || key === 'color-surface' || key === 'color-background') {
+        const mix = (a: string, b: string, weight: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * weight + parseInt(b.slice(i, i + 2), 16) * (1 - weight)).toString(16).padStart(2, '0')).join('');
+        const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4).reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+        const contrast = (a: string, b: string) => { const x = luminance(a), y = luminance(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+        const needsContrast = (candidate: string) => [vars['color-surface'], vars['color-background']].some(bg => contrast(candidate, bg) < 4.5 && contrast(vars['color-text'], bg) >= 4.5);
+        let weight = 0.67;
+        let secondary = mix(vars['color-text'], vars['color-surface'], weight);
+        while (weight < 1 && needsContrast(secondary)) {
+          weight = Math.min(1, weight + 0.01);
+          secondary = mix(vars['color-text'], vars['color-surface'], weight);
+        }
+        vars['color-text-secondary'] = secondary;
+        vars['color-border'] = mix(vars['color-text'], vars['color-surface'], 0.13);
+      }
+      return { ...t, vars };
+    }));
     // Live-apply while editing
     if (mode === 'custom') {
       document.documentElement.style.setProperty(`--${key}`, value);
@@ -346,6 +377,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     savedThemes,
     selectedCustomThemeId,
     selectCustomTheme,
+    selectPublishedTheme,
     addCustomTheme,
     renameCustomTheme,
     deleteCustomTheme,

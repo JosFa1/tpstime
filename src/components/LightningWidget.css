@@ -1,0 +1,28 @@
+﻿.lightning-widget { border: 1px solid var(--color-border); border-radius: 16px; padding: clamp(1.25rem, 3vw, 2rem); background: var(--color-surface); color: var(--color-text); }
+.lightning-widget--live h4, .lightning-widget--live p { margin: 1.25rem 0 .75rem; }
+.lightning-widget__status { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-background); color: var(--color-primary); }
+.lightning-widget__status--alert { color: var(--color-error); }
+.lightning-widget__status--test { color: var(--color-warning); }
+.lightning-widget__status > div { display: grid; gap: .25rem; flex: 1; }
+.lightning-widget__status > div span, .lightning-widget__status em { color: var(--color-text-secondary); font-size: .875rem; font-style: normal; }
+.lightning-widget__status .is-up { color: var(--color-success); }
+.lightning-widget__status .is-down { color: var(--color-error); }
+.lightning-widget__clock { display: flex; gap: .75rem; }
+.lightning-widget__clock > div { display: grid; min-width: 5rem; text-align: center; padding: .75rem; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-background); }
+.lightning-widget__clock strong { font-size: 1.5rem; }
+.lightning-widget__clock span, .lightning-widget--live dt { font-size: .75rem; color: var(--color-text-secondary); }
+.lightning-widget--live dl { display: flex; gap: 2rem; margin: 1rem 0; }
+.lightning-widget--live dl > div { display: grid; gap: .3rem; }
+.lightning-widget--live dd { margin: 0; font-weight: 600; }
+.lightning-widget__source { display: inline-flex; align-items: center; gap: .4rem; margin-top: .75rem; color: var(--color-primary); }
+.lightning-widget__state { display: grid; gap: .6rem; justify-items: start; }
+.lightning-widget__state--error { color: var(--color-error); }
+.lightning-widget__state button, .lightning-widget__state a { display: inline-flex; align-items: center; gap: .35rem; margin-right: 1rem; color: var(--color-primary); }
+.lightning-widget__stale { color: var(--color-warning); font-size: .85rem; }
+.lightning-widget__updated { color: var(--color-text-secondary); font-size: .8rem; }
+.lightning-widget__official { width: 100%; min-height: 360px; border: 0; border-radius: .5rem; background: #fff; }
+.lightning-widget__state--error:has(iframe) { justify-items: stretch; }
+.lightning-widget__state a, .lightning-widget__source { min-height: 44px; }
+.lightning-widget__state button, .lightning-widget__stale button { padding: .5rem .8rem; border: 1px solid var(--color-border); border-radius: .5rem; }
+.lightning-widget__state { min-height: 12rem; align-content: center; }
+@media (max-width: 400px) { .lightning-widget__status { flex-wrap: wrap; gap: .75rem; } .lightning-widget__clock { gap: .35rem; } .lightning-widget__clock > div { min-width: 0; flex: 1; padding: .6rem; } }

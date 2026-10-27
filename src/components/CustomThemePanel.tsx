@@ -1,44 +1,23 @@
 import React, { useMemo, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import type { ThemeVarKey } from '../contexts/ThemeContext';
 
 const groups: Array<{ title: string; keys: { key: ThemeVarKey; label: string }[] }> = [
-  {
-    title: 'Brand',
-    keys: [
-      { key: 'color-primary', label: 'Primary' },
-      { key: 'color-secondary', label: 'Secondary' },
-      { key: 'color-accent', label: 'Accent' },
-    ],
-  },
-  {
-    title: 'Base',
-    keys: [
-      { key: 'color-background', label: 'Background' },
-      { key: 'color-surface', label: 'Surface' },
-    ],
-  },
-  {
-    title: 'Text',
-    keys: [
-      { key: 'color-text', label: 'Text' },
-      { key: 'color-text-secondary', label: 'Text Secondary' },
-    ],
-  },
-  {
-    title: 'Borders',
-    keys: [
-      { key: 'color-border', label: 'Border' },
-    ],
-  },
-  {
-    title: 'Status',
-    keys: [
-      { key: 'color-error', label: 'Error' },
-      { key: 'color-warning', label: 'Warning' },
-      { key: 'color-success', label: 'Success' },
-    ],
-  },
+  { title: 'Main colors', keys: [
+    { key: 'color-background', label: 'Background' },
+    { key: 'color-surface', label: 'Surface' },
+    { key: 'color-text', label: 'Text' },
+    { key: 'color-primary', label: 'Primary' },
+  ] },
+  { title: 'Fine-tune colors', keys: [
+    { key: 'color-secondary', label: 'Secondary' },
+    { key: 'color-accent', label: 'Accent' },
+    { key: 'color-text-secondary', label: 'Text Secondary' },
+    { key: 'color-border', label: 'Border' },
+    { key: 'color-warning', label: 'Warning' },
+    { key: 'color-success', label: 'Success' },
+  ] },
 ];
 
 const swatchStyle: React.CSSProperties = { width: 24, height: 24, borderRadius: 4, border: '1px solid #e0e0e0' };
@@ -60,7 +39,7 @@ const CustomThemePanel: React.FC = () => {
 
   React.useEffect(() => {
     setName(selected?.name || '');
-  }, [selected?.id]);
+  }, [selected?.id, selected?.name]);
 
   const onDelete = () => {
     if (!selected) return;
@@ -77,8 +56,9 @@ const CustomThemePanel: React.FC = () => {
     <div className="bg-surface border border-border rounded-lg p-4 space-y-4">
       <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between">
         <div className="flex-1">
-          <label className="block text-text-secondary text-sm mb-1">Saved Themes</label>
+          <label htmlFor="saved-theme" className="block text-text-secondary text-sm mb-1">Saved Themes</label>
           <select
+            id="saved-theme"
             value={selected?.id || ''}
             onChange={(e) => selectCustomTheme(e.target.value)}
             className="w-full bg-background border border-border text-text p-2 rounded"
@@ -106,8 +86,9 @@ const CustomThemePanel: React.FC = () => {
 
       {/* Rename */}
       <div>
-        <label className="block text-text-secondary text-sm mb-1">Theme Name</label>
+        <label htmlFor="theme-name" className="block text-text-secondary text-sm mb-1">Theme Name</label>
         <input
+          id="theme-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -119,7 +100,7 @@ const CustomThemePanel: React.FC = () => {
 
       {/* Color pickers */}
       <div className="space-y-4">
-        {groups.map((g) => (
+        {groups.slice(0, 1).map((g) => (
           <div key={g.title} className="border border-border rounded-md">
             <div className="px-3 py-2 bg-background text-text font-semibold border-b border-border">{g.title}</div>
             <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -143,12 +124,30 @@ const CustomThemePanel: React.FC = () => {
         ))}
       </div>
 
+      <details className="settings-disclosure">
+        <summary>Advanced colors <ChevronDown size={20} aria-hidden="true" /></summary>
+        <div className="space-y-4 mt-4">
+          {groups.slice(1).map((g) => (
+            <div key={g.title} className="border border-border rounded-md">
+              <div className="px-3 py-2 bg-background text-text font-semibold border-b border-border">{g.title}</div>
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {g.keys.map(({ key, label }) => <label key={key} className="flex items-center justify-between gap-3">
+                  <span className="text-text-secondary text-sm">{label}</span>
+                  <input type="color" value={selected?.vars?.[key] || '#ffffff'} onChange={(e) => updateVar(key, e.target.value)} className="w-10 h-8 p-0 bg-transparent border-0" aria-label={label} />
+                </label>)}
+              </div>
+            </div>
+          ))}
+        </div>
       {/* Danger zone */}
       <div className="pt-2">
         <button onClick={onResetAll} className="w-full px-3 py-2 rounded border border-red-600 text-red-600">
           Remove all custom themes
         </button>
       </div>
+      </details>
+
+
     </div>
   );
 };

@@ -1,0 +1,25 @@
+.grille-shell { min-height: 100dvh; }
+#root:has(> .demo-notice) .grille-shell { min-height: calc(100dvh - 32px); }
+.grille-page { width: min(100% - 2rem, 1500px); margin: 0 auto; padding: clamp(.25rem, 2vh, 1rem) 0 1rem; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.grille-header { margin-bottom: clamp(1rem, 3vh, 2rem); }
+.grille-header h1 { margin: 0; color: var(--color-text); font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 750; letter-spacing: -.035em; line-height: 1.1; }
+.grille-header p { max-width: 42rem; margin: .55rem 0 0; color: var(--color-text-secondary); font-size: .875rem; line-height: 1.45; }
+.grille-days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(.5rem, 1vw, 1rem); align-items: stretch; }
+.grille-day { min-width: 0; padding: clamp(.85rem, 1.4vw, 1.35rem); border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.grille-day__heading { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; padding-bottom: .8rem; border-bottom: 1px solid var(--color-border); }
+.grille-day__heading h2 { margin: 0; color: var(--color-text); font-size: clamp(1rem, 1.3vw, 1.2rem); font-weight: 700; }
+.grille-day__heading span { color: var(--color-primary); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.grille-day ul { display: grid; gap: clamp(.45rem, 1.3vh, .8rem); margin: .9rem 0 0; padding: 0; list-style: none; }
+.grille-day li { display: flex; gap: .55rem; align-items: baseline; color: var(--color-text); font-size: clamp(.85rem, 1vw, 1rem); line-height: 1.4; }
+.grille-day li::before { content: ''; flex: none; width: .3rem; height: .3rem; border-radius: 50%; background: var(--color-primary); }
+.grille-day-picker { display: none; }
+@media (max-width: 900px) {
+  .grille-page { width: min(100% - 2rem, 600px); justify-content: flex-start; }
+  .grille-day-picker { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; margin-bottom: .75rem; }
+  .grille-day-picker button { min-width: 0; padding: .5rem .2rem; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-surface); color: var(--color-text); font-weight: 600; }
+  .grille-day-picker button[aria-pressed="true"] { color: var(--color-primary); border-color: var(--color-primary); box-shadow: inset 0 0 0 1px var(--color-primary); }
+  .grille-days { display: block; }
+  .grille-day { display: none; }
+  .grille-day--selected { display: block; }
+  .grille-day li { font-size: 1rem; }
+}

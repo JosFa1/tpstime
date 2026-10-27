@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useId, useRef, useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 type MenuButtonProps = {
@@ -7,22 +7,17 @@ type MenuButtonProps = {
 	selected: boolean;
 	label: string;
 	rounded?: string;
-	navigate: (to: string) => void;
+	onNavigate: () => void;
 };
 
-const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, navigate }) => {
+const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, onNavigate }) => {
 		return (
-				<button
-					className={`w-full text-left px-4 py-2 text-text ${rounded || ''} ${selected ? 'font-bold' : 'font-semibold'}`}
-					style={{
-						textDecoration: selected ? undefined : undefined
-					}}
-					onClick={() => navigate(to)}
-					onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-					onMouseLeave={e => e.currentTarget.style.textDecoration = ''}
+				<Link to={to} aria-current={selected ? 'page' : undefined}
+					className={`menu-link block w-full text-left px-4 py-2 text-text ${rounded || ''} ${selected ? 'font-bold' : 'font-semibold'}`}
+					onClick={onNavigate}
 				>
 					{label}
-				</button>
+				</Link>
 		);
 };
 
@@ -31,12 +26,14 @@ const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, n
 const HamburgerMenu: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { logout, user } = useAuth();
+	const { logout } = useAuth();
 	const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;
 	const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
-	const [isMobile, setIsMobile] = useState(false);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const menuId = useId();
+	const closeMenu = () => setOpen(false);
 	const [scheduleType, setScheduleType] = useState<'US' | 'MS'>(() => {
 		const saved = localStorage.getItem('scheduleType');
 		return saved === 'MS' ? 'MS' : 'US';
@@ -49,27 +46,18 @@ const HamburgerMenu: React.FC = () => {
 	}, [scheduleType]);
 
 	useEffect(() => {
-		const checkMobile = () => {
-			setIsMobile(window.matchMedia('(pointer: coarse)').matches || /Mobi|Android/i.test(navigator.userAgent));
-		};
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
-		return () => window.removeEventListener('resize', checkMobile);
-	}, []);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
+			const handleClickOutside = (event: PointerEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
 				setOpen(false);
 			}
 		};
 		if (open) {
-			document.addEventListener('mousedown', handleClickOutside);
+			document.addEventListener('pointerdown', handleClickOutside);
 		} else {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('pointerdown', handleClickOutside);
 		}
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('pointerdown', handleClickOutside);
 		};
 	}, [open]);
 
@@ -78,15 +66,19 @@ const HamburgerMenu: React.FC = () => {
 		navigate('/login');
 	};
 
-	const hamburgerBtnBase = "flex flex-col justify-center items-center w-10 h-10 rounded-lg border-2 border-primary bg-background shadow-sm transition-colors duration-150";
-	const hamburgerBtnHover = "hover:bg-accent";
-	const hamburgerBtnActiveMobile = isMobile && open ? "bg-accent" : "";
+	const hamburgerBtnBase = "menu-toggle flex flex-col justify-center items-center w-11 h-11 rounded-lg border-2 border-primary bg-background shadow-sm";
 
 	return (
-		<div className="relative ml-2" ref={menuRef}>
+		<div className="relative ml-2" ref={menuRef} onKeyDown={event => {
+			if (event.key === 'Escape' && open) { event.stopPropagation(); setOpen(false); buttonRef.current?.focus(); }
+		}} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false); }}>
 			<button
-				className={`${hamburgerBtnBase} ${isMobile ? hamburgerBtnActiveMobile : hamburgerBtnHover}`}
+				className={hamburgerBtnBase}
+				ref={buttonRef}
+				type="button"
 				aria-label="Menu"
+				aria-expanded={open}
+				aria-controls={open ? menuId : undefined}
 				onClick={() => setOpen((prev) => !prev)}
 			>
 				<span className="block w-6 h-1 bg-primary mb-1 rounded transition-all"></span>
@@ -94,9 +86,10 @@ const HamburgerMenu: React.FC = () => {
 				<span className="block w-6 h-1 bg-primary rounded transition-all"></span>
 			</button>
 			{open && (
-				<div className="absolute right-0 mt-2 w-44 bg-background border border-accent rounded shadow-lg z-50">
+				<div id={menuId} className="site-menu absolute right-0 mt-2 w-44 bg-background border border-accent rounded shadow-lg z-50">
 					<div className="flex flex-row gap-2 px-2 pt-2 pb-2">
 						<button
+							aria-label="Upper school" aria-pressed={scheduleType === 'US'} title="Upper school"
 							className={`flex-1 px-0 py-2 rounded-lg border-2 text-base font-bold transition-colors duration-150 mx-0 ${scheduleType === 'US' ? 'bg-primary text-background border-primary font-bold' : 'bg-background text-primary border-primary'}`}
 							style={{marginLeft: 0, marginRight: 0}}
 							onClick={() => setScheduleType('US')}
@@ -104,6 +97,7 @@ const HamburgerMenu: React.FC = () => {
 							US
 						</button>
 						<button
+							aria-label="Middle school" aria-pressed={scheduleType === 'MS'} title="Middle school"
 							className={`flex-1 px-0 py-2 rounded-lg border-2 text-base font-bold transition-colors duration-150 mx-0 ${scheduleType === 'MS' ? 'bg-primary text-background border-primary font-bold' : 'bg-background text-primary border-primary'}`}
 							style={{marginLeft: 0, marginRight: 0}}
 							onClick={() => setScheduleType('MS')}
@@ -117,31 +111,31 @@ const HamburgerMenu: React.FC = () => {
 							selected={location.pathname === '/'}
 							label="Home"
 							rounded="rounded-t"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/settings"
 							selected={location.pathname === '/settings'}
 							label="Settings"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/houses"
 							selected={location.pathname === '/houses'}
 							label="Houses"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/grille"
 							selected={location.pathname === '/grille'}
 							label="Grille Menu"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/info"
 							selected={location.pathname === '/info'}
 							label="Info"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 							{enableAuth && (
 								<button

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth as useAuthContext } from '../contexts/AuthContext';
 
 /**
@@ -6,7 +6,7 @@ import { useAuth as useAuthContext } from '../contexts/AuthContext';
  */
 export const useAuth = () => {
   const auth = useAuthContext();
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerifying] = useState(false);
   
   useEffect(() => {
     // Skip verification if not authenticated or no token
