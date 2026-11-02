@@ -5,7 +5,7 @@
 /* Adobe Source Sans 3, release 3.052R; SIL Open Font License in public/fonts/. */
 @font-face {
   font-family: 'Source Sans 3';
-  src: url('./fonts/source-sans-3-variable.woff2') format('woff2');
+  src: url('./fonts/source-sans-3-variable.woff') format('woff');
   font-style: normal;
   font-weight: 200 900;
   font-display: swap;
@@ -17,7 +17,7 @@ button, input, select, textarea { font-family: inherit; }
 
 @font-face {
   font-family: OpenDyslexic;
-  src: url('./fonts/od.woff2') format('woff2');
+  src: url('./fonts/od.woff') format('woff');
   font-display: swap;
 }
 
