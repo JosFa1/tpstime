@@ -1,0 +1,18 @@
+.house-history { margin: 2rem 0; padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.house-history h2 { margin: 0; color: var(--color-text); font-size: 1.35rem; font-weight: 700; }
+.house-history p { margin: .4rem 0 1rem; color: var(--color-text-secondary); font-size: .875rem; }
+.house-history__legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; color: var(--color-text); font-size: .8rem; }
+.house-history__legend button { display: inline-flex; align-items: center; gap: .35rem; min-height: 36px; padding: .2rem .4rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+.house-history__legend button[aria-pressed="true"] { border-color: var(--color-border); background: var(--color-background); }
+.house-history__legend i { width: .7rem; height: .7rem; border-radius: 50%; }
+.house-history svg { display: block; width: 100%; min-height: 160px; }
+.house-history__readout { min-height: 1.5rem; margin: .75rem 0 .25rem; color: var(--color-text-secondary); font-size: .8rem; }
+.house-history__readout strong { color: var(--color-text); }
+.house-history__series { transition: opacity 150ms ease; }
+.house-history__series.is-muted { opacity: .16; }
+.house-history__series.is-active .house-history__line { stroke-width: 4.5; }
+.house-history__series [role="button"] { cursor: pointer; }
+.house-history__series [role="button"]:focus-visible .house-history__dot, .house-history__series [role="button"]:hover .house-history__dot { stroke: var(--color-text); stroke-width: 2; r: 6; }
+.house-history__dates { display: flex; justify-content: space-between; gap: 1rem; padding-left: 6%; padding-right: 4%; color: var(--color-text-secondary); font-size: .75rem; }
+
+@media (max-width: 600px) { .house-history svg text { font-size: 28px; } }

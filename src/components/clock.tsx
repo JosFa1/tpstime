@@ -5,9 +5,10 @@ import { formatClockParts } from "../hooks/formatClockParts";
 
 type ClockProps = {
   schedule: ClassPeriod[];
+  showSeconds?: boolean;
 };
 
-const Clock: React.FC<ClockProps> = ({ schedule }) => {
+const Clock: React.FC<ClockProps> = ({ schedule, showSeconds = true }) => {
   const [status, setStatus] = useState(() => getScheduleStatus(schedule));
 
   useEffect(() => {
@@ -19,15 +20,12 @@ const Clock: React.FC<ClockProps> = ({ schedule }) => {
   }, [schedule]);
 
   const { leftSide, middleSide, rightSide } = formatClockParts(status.secondsUntilNext);
+  const display = showSeconds ? `${leftSide}:${middleSide ? `${middleSide}:` : ""}${rightSide}` : `${leftSide}${middleSide ? `:${middleSide}` : ""}`;
 
   return (
-    <div className="flex flex-col items-start justify-center space-y-1 font-mono">
+    <div className="timer-clock">
       {status.isDayOver ? null : (
-        <p
-          className={`text-[25vw] md:text-[20vw] w-full font-bold text-center leading-none text-primary`}
-        >
-          {leftSide}:{middleSide ? `${middleSide}:` : ''}{rightSide}
-        </p>
+        <p className={`timer-digits ${display.length > 5 ? 'timer-digits--long' : ''}`}>{display}</p>
       )}
     </div>
   );

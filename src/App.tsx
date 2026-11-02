@@ -1,11 +1,14 @@
 import React, { useEffect, Suspense, lazy } from "react";
 import { initializeThemeFromSystemPreference } from "./theme/initTheme";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/login";
 import OAuthCallback from './pages/auth/callback';
 import ExtensionPromo from "./components/ExtensionPromo";
+import { usePreferences } from './preferences';
+import { PageBoundary, PageLoading } from './components/Loading';
+import { localPreview } from './localPreview';
 
 // Lazy load protected routes to prevent them from being included in the initial bundle
 const Home = lazy(() => import("./pages/home"));
@@ -14,14 +17,19 @@ const Houses = lazy(() => import("./pages/houses"));
 const Info = lazy(() => import("./pages/info"));
 const GrilleMenu = lazy(() => import("./pages/grilleMenu"));
 
-// Loading fallback for lazy components
-const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="text-text text-xl">Loading...</div>
-  </div>
-);
+function RouteBoundary({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  return <PageBoundary key={pathname}><Suspense fallback={<PageLoading pathname={pathname} />}>{children}</Suspense></PageBoundary>;
+}
 
 function App() {
+  const [preferences] = usePreferences();
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-dyslexic-font', preferences.dyslexicFont);
+  }, [preferences.dyslexicFont]);
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-reduce-motion', preferences.reduceMotion);
+  }, [preferences.reduceMotion]);
   useEffect(() => {
     initializeThemeFromSystemPreference();
   }, []);
@@ -29,7 +37,8 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Suspense fallback={<LoadingFallback />}>
+        {localPreview && <div className="demo-notice">Local demo — example schedule, not published school data.</div>}
+        <RouteBoundary>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<OAuthCallback />} />
@@ -75,7 +84,7 @@ function App() {
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </Suspense>
+        </RouteBoundary>
         <ExtensionPromo />
       </BrowserRouter>
     </AuthProvider>

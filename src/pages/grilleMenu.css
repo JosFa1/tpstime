@@ -1,0 +1,27 @@
+.grille-shell { min-height: 100dvh; }
+#root:has(> .demo-notice) .grille-shell { min-height: calc(100dvh - 32px); }
+.grille-page { width: min(100% - 3rem, 960px); margin: 0 auto; padding: 1.25rem 0 2.5rem; flex: 1; }
+.grille-header { margin-bottom: 2rem; }
+.grille-header h1 { margin: 0; color: var(--color-text); font-size: clamp(2rem, 4vw, 2.5rem); font-weight: 650; letter-spacing: -.025em; line-height: 1.2; }
+.grille-header p { max-width: 42rem; margin: .65rem 0 0; color: var(--color-text-secondary); font-size: .9375rem; line-height: 1.5; }
+.grille-days { display: grid; gap: 1.75rem; }
+.grille-day { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 1.5rem; align-items: baseline; }
+.grille-day h2 { margin: 0; color: var(--color-text-secondary); font-size: 1rem; line-height: 1.5; font-weight: 500; }
+.grille-day ul { margin: 0; padding: 0; list-style: none; }
+.grille-mains { display: flex; flex-wrap: wrap; column-gap: 1.5rem; row-gap: .25rem; }
+.grille-mains li { color: var(--color-text); font-size: 1.25rem; line-height: 1.4; font-weight: 600; }
+.grille-day .grille-sides { display: flex; flex-wrap: wrap; column-gap: 1.25rem; row-gap: .25rem; padding-top: .4rem; }
+.grille-sides li { color: var(--color-text-secondary); font-size: 1rem; line-height: 1.5; }
+.grille-day-picker { display: none; }
+@media (max-width: 699px) {
+  .grille-page { width: calc(100% - 2rem); padding-top: 1rem; }
+  .grille-header { margin-bottom: 1.25rem; }
+  .grille-day-picker { display: flex; justify-content: space-between; gap: .25rem; margin-bottom: 1.5rem; }
+  .grille-day-picker button { min-width: 44px; padding: .5rem .65rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--color-text-secondary); font: inherit; }
+  .grille-day-picker button[aria-pressed="true"] { color: var(--color-primary); border-bottom-color: currentColor; font-weight: 600; }
+  .grille-day { display: none; }
+  .grille-day--selected { display: block; }
+  .grille-day h2 { margin-bottom: .65rem; }
+  .grille-mains, .grille-day .grille-sides { display: grid; gap: .5rem; }
+  .grille-day .grille-sides { padding-top: .85rem; }
+}

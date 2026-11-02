@@ -6,6 +6,10 @@ import { formatClockParts } from './formatClockParts';
 export function useGlobalClock(schedule: ClassPeriod[]) {
   useEffect(() => {
     const updateTitle = () => {
+      if (!schedule.length) {
+        document.title = 'TPSTime';
+        return;
+      }
       const status = getScheduleStatus(schedule);
       
       if (status.isDayOver) {

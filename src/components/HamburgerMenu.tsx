@@ -1,28 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useId, useRef, useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Menu, X } from 'lucide-react';
 
 type MenuButtonProps = {
 	to: string;
 	selected: boolean;
 	label: string;
-	rounded?: string;
-	navigate: (to: string) => void;
+	onNavigate: () => void;
 };
 
-const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, navigate }) => {
+const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, onNavigate }) => {
 		return (
-				<button
-					className={`w-full text-left px-4 py-2 text-text ${rounded || ''} ${selected ? 'font-bold' : 'font-semibold'}`}
-					style={{
-						textDecoration: selected ? undefined : undefined
-					}}
-					onClick={() => navigate(to)}
-					onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-					onMouseLeave={e => e.currentTarget.style.textDecoration = ''}
+				<Link to={to} aria-current={selected ? 'page' : undefined}
+					className="menu-link"
+					onClick={onNavigate}
 				>
 					{label}
-				</button>
+				</Link>
 		);
 };
 
@@ -31,12 +26,14 @@ const MenuButton: React.FC<MenuButtonProps> = ({ to, selected, label, rounded, n
 const HamburgerMenu: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { logout, user } = useAuth();
+	const { logout } = useAuth();
 	const enableAuthEnv = process.env.REACT_APP_ENABLE_AUTH;
 	const enableAuth = !(enableAuthEnv === 'false' || enableAuthEnv === '0');
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
-	const [isMobile, setIsMobile] = useState(false);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const menuId = useId();
+	const closeMenu = () => setOpen(false);
 	const [scheduleType, setScheduleType] = useState<'US' | 'MS'>(() => {
 		const saved = localStorage.getItem('scheduleType');
 		return saved === 'MS' ? 'MS' : 'US';
@@ -49,27 +46,18 @@ const HamburgerMenu: React.FC = () => {
 	}, [scheduleType]);
 
 	useEffect(() => {
-		const checkMobile = () => {
-			setIsMobile(window.matchMedia('(pointer: coarse)').matches || /Mobi|Android/i.test(navigator.userAgent));
-		};
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
-		return () => window.removeEventListener('resize', checkMobile);
-	}, []);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
+			const handleClickOutside = (event: PointerEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
 				setOpen(false);
 			}
 		};
 		if (open) {
-			document.addEventListener('mousedown', handleClickOutside);
+			document.addEventListener('pointerdown', handleClickOutside);
 		} else {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('pointerdown', handleClickOutside);
 		}
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('pointerdown', handleClickOutside);
 		};
 	}, [open]);
 
@@ -78,81 +66,80 @@ const HamburgerMenu: React.FC = () => {
 		navigate('/login');
 	};
 
-	const hamburgerBtnBase = "flex flex-col justify-center items-center w-10 h-10 rounded-lg border-2 border-primary bg-background shadow-sm transition-colors duration-150";
-	const hamburgerBtnHover = "hover:bg-accent";
-	const hamburgerBtnActiveMobile = isMobile && open ? "bg-accent" : "";
-
 	return (
-		<div className="relative ml-2" ref={menuRef}>
+		<div className="relative ml-2" ref={menuRef} onKeyDown={event => {
+			if (event.key === 'Escape' && open) { event.stopPropagation(); setOpen(false); buttonRef.current?.focus(); }
+		}} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false); }}>
 			<button
-				className={`${hamburgerBtnBase} ${isMobile ? hamburgerBtnActiveMobile : hamburgerBtnHover}`}
+				className="menu-toggle"
+				ref={buttonRef}
+				type="button"
 				aria-label="Menu"
+				aria-expanded={open}
+				aria-controls={open ? menuId : undefined}
 				onClick={() => setOpen((prev) => !prev)}
 			>
-				<span className="block w-6 h-1 bg-primary mb-1 rounded transition-all"></span>
-				<span className="block w-6 h-1 bg-primary mb-1 rounded transition-all"></span>
-				<span className="block w-6 h-1 bg-primary rounded transition-all"></span>
+				{open ? <X size={20} strokeWidth={1.8} aria-hidden="true" /> : <Menu size={20} strokeWidth={1.8} aria-hidden="true" />}
 			</button>
 			{open && (
-				<div className="absolute right-0 mt-2 w-44 bg-background border border-accent rounded shadow-lg z-50">
-					<div className="flex flex-row gap-2 px-2 pt-2 pb-2">
+				<div id={menuId} className="site-menu">
+					<div className="menu-school" role="group" aria-label="School">
 						<button
-							className={`flex-1 px-0 py-2 rounded-lg border-2 text-base font-bold transition-colors duration-150 mx-0 ${scheduleType === 'US' ? 'bg-primary text-background border-primary font-bold' : 'bg-background text-primary border-primary'}`}
-							style={{marginLeft: 0, marginRight: 0}}
+							aria-label="Upper school" aria-pressed={scheduleType === 'US'} title="Upper school"
+							type="button"
 							onClick={() => setScheduleType('US')}
 						>
 							US
 						</button>
 						<button
-							className={`flex-1 px-0 py-2 rounded-lg border-2 text-base font-bold transition-colors duration-150 mx-0 ${scheduleType === 'MS' ? 'bg-primary text-background border-primary font-bold' : 'bg-background text-primary border-primary'}`}
-							style={{marginLeft: 0, marginRight: 0}}
+							aria-label="Middle school" aria-pressed={scheduleType === 'MS'} title="Middle school"
+							type="button"
 							onClick={() => setScheduleType('MS')}
 						>
 							MS
 						</button>
 					</div>
-					<div className="pt-2">
+					<div>
 						<MenuButton
 							to="/"
 							selected={location.pathname === '/'}
 							label="Home"
-							rounded="rounded-t"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/settings"
 							selected={location.pathname === '/settings'}
 							label="Settings"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/houses"
 							selected={location.pathname === '/houses'}
 							label="Houses"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/grille"
 							selected={location.pathname === '/grille'}
 							label="Grille Menu"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 						<MenuButton
 							to="/info"
 							selected={location.pathname === '/info'}
 							label="Info"
-							navigate={navigate}
+							onNavigate={closeMenu}
 						/>
 							{enableAuth && (
 								<button
 									onClick={handleLogout}
-									className="w-full text-left px-4 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors font-semibold rounded-b"
+									type="button" className="menu-logout"
 								>
 									Logout
 								</button>
 							)}
 					</div>
-					<div className="w-full text-center text-xs text-gray-500 mt-4 mb-2">
+					<div className="menu-credit">
     Joe Borgman & Asad Sadikov
 </div>
 				</div>

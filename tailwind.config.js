@@ -6,6 +6,7 @@ module.exports = {
   darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
+      fontFamily: { sans: ['Source Sans 3', 'Segoe UI', 'sans-serif'] },
       colors: {
         primary: {
           DEFAULT: 'var(--color-primary)'

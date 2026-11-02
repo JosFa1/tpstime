@@ -1,93 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { ClassPeriod } from "../types/classPeriod";
-import { getFormattedDate, convertTo12Hour } from "../utils/utils";
-import { getActivePeriod } from "../hooks/scheduleStatus";
+import { convertTo12Hour } from "../utils/utils";
+import { getScheduleStatus } from "../hooks/scheduleStatus";
 
 type ScheduleProps = {
   schedule: ClassPeriod[];
+  timeFormat?: "12h" | "24h";
+  compact?: boolean;
+  highlightActive?: boolean;
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ schedule }) => {
-  const today = new Date();
-  const formattedDate = getFormattedDate(today);
-
-  const [activePeriodInfo, setActivePeriodInfo] = useState(() =>
-    getActivePeriod(schedule)
-  );
-
-  const [highlightNext, setHighlightNext] = useState(false);
-
+const Schedule: React.FC<ScheduleProps> = ({ schedule, timeFormat = "12h", compact = false, highlightActive = true }) => {
+  const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const statusInterval = setInterval(() => {
-      setActivePeriodInfo(getActivePeriod(schedule));
-    }, 1000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
-    const highlightInterval = setInterval(() => {
-      setHighlightNext((prev) => !prev);
-    }, 1000);
+  const status = getScheduleStatus(schedule);
+  const active = status.currentPeriod && !status.isDayOver ? status.currentPeriod : status.nextPeriod;
+  const format = (time: string) => timeFormat === "24h" ? time : `${convertTo12Hour(time)} ${Number(time.slice(0, 2)) < 12 ? "AM" : "PM"}`;
 
-    return () => {
-      clearInterval(statusInterval);
-      clearInterval(highlightInterval);
-    };
-  }, [schedule]);
-
-  // Update document.title to match homepage clock logic
-  useEffect(() => {
-    const { getScheduleStatus } = require("../hooks/scheduleStatus");
-    const updateTitle = () => {
-      const status = getScheduleStatus(schedule);
-      if (status.isDayOver) {
-        document.title = "School Day Complete";
-        return;
-      }
-      const totalMinutes = Math.ceil(status.secondsUntilNext / 60);
-      if (status.currentPeriod) {
-        document.title = `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'} until ${status.currentPeriod.name} ends`;
-      } else if (status.nextPeriod) {
-        document.title = `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'} until ${status.nextPeriod.name} starts`;
-      } else {
-        document.title = "TPSTIME";
-      }
-    };
-    updateTitle();
-    const interval = setInterval(updateTitle, 1000);
-    return () => clearInterval(interval);
-  }, [schedule]);
+  if (compact) return <div className="timer-summary">
+    <div><span><small>{status.currentPeriod && !status.isDayOver ? "Current class" : "Up next"}</small><strong>{active?.name ?? "School day complete"}</strong></span></div>
+    <div className="timer-summary-time"><span><small>Class time</small><strong>{active ? `${format(active.start)} – ${format(active.end)}` : "—"}</strong></span></div>
+    <div><span><small>Next</small><strong>{status.nextPeriod?.name ?? "No upcoming class"}{status.nextPeriod && <span className="timer-next-time">{format(status.nextPeriod.start)}</span>}</strong></span></div>
+  </div>;
 
   return (
-    <div className="w-full">
-  <h2 className="text-4xl md:text-7xl py-8 text-text-secondary" style={{marginTop: '+230px'}}>{formattedDate}</h2>
-      <div>
-        {/* Flaw in the code below: it is computing the current class based on if
-        two strings are the same, it should be an index based system as to not
-        have future errors */}
-        {schedule?.map((period, index) => {
-          const isActivePeriod = activePeriodInfo.period?.name === period.name;
-          const shouldBlink =
-            isActivePeriod && activePeriodInfo.isBetweenClasses;
-
-          return (
-            <div
-              key={`${period.name}-${period.start}-${index}`}
-              className={`flex flex-row justify-between md:text-5xl py-2 transition-colors duration-500 ease-in-out ${
-                isActivePeriod
-                  ? shouldBlink
-                    ? highlightNext
-                      ? "text-primary"
-                      : "text-text-secondary"
-                    : "text-primary"
-                  : "text-text-secondary"
-              }`}
-            >
-              <h3 className={`text-xl md:text-5xl${isActivePeriod ? ' font-bold' : ''}`}>{period.name}</h3>
-              <p className={`text-lg md:text-5xl${isActivePeriod ? ' font-bold' : ''}`}> 
-                {convertTo12Hour(period.start)} - {convertTo12Hour(period.end)}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+    <div className={`schedule-list ${compact ? "compact" : ""}`}>
+      {schedule.map((period, index) => {
+        const start = period.getStartUnix() * 1000;
+        const end = period.getEndUnix() * 1000;
+        const state = highlightActive ? now >= start && now < end ? "current" : now < start && period === active ? "next" : "" : "";
+        return <div className={`schedule-row ${state}`} key={`${period.start}-${period.end}-${index}`}>
+          <span className="schedule-period">{period.name}</span>
+          <span className="schedule-time">{format(period.start)} – {format(period.end)}</span>
+        </div>;
+      })}
     </div>
   );
 };

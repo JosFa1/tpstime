@@ -1,51 +1,38 @@
-import React from 'react';
-import HamburgerMenu from "../components/HamburgerMenu";
-import FooterNote from "../components/FooterNote";
+import React, { useState } from 'react';
+import HamburgerMenu from '../components/HamburgerMenu';
+import FooterNote from '../components/FooterNote';
+import './grilleMenu.css';
+
+const menu = [
+  { day: 'Monday', mains: ['Spaghetti & Meatballs', 'Grilled Chicken Breast'], sides: ['Broccoli w/ Garlic & Lemon', 'Garlic Bread Stick', 'Regular Fries'] },
+  { day: 'Tuesday', mains: ['Chicken Soft & Barbacoa Beef Tacos', 'Taco Salad'], sides: ['Spanish Style Corn', 'Cilantro Lime Rice', 'Red Beans & Rice', 'Mexican Quinoa', 'Crinkle Cut Fries'] },
+  { day: 'Wednesday', mains: ['Sweet & Sour Chicken'], sides: ['Vegetable Fried Rice', 'Vegetable Blend Mandarin Stir Fry', 'Vegetable Egg Rolls', 'Regular Fries'] },
+  { day: 'Thursday', mains: ['BBQ Chopped Chicken'], sides: ['Baked Mac & Cheese', 'Vegetable Blend California Normandy', 'Vegetarian Baked Beans', 'Regular Fries'] },
+  { day: 'Friday', mains: ['Seared Balsamic Salmon Fillet'], sides: ['Tuscan Style Roasted Potatoes', 'Quinoa Pilaf', 'Greek Spinach', 'Tuscan Zucchini & Tomatoes', 'Waffle Fries'] },
+];
 
 const GrilleMenu: React.FC = () => {
+  const [selectedDay, setSelectedDay] = useState('Monday');
   return (
-    <div className="min-h-screen flex flex-col bg-background text-text">
-      <div className="w-full flex flex-row justify-end items-center pt-4 pb-2 px-2 sm:px-4">
-        <HamburgerMenu />
-      </div>
-      <div className="flex-grow">
-        <div className="pt-2 max-w-4xl w-full mx-auto px-4">
-          <div className="space-y-4">
-            {/* Monday Box */}
-            <div className="border-2 border-accent rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Monday</h2>
-              <p className="text-center">Spaghetti & Meatballs | Broccoli w/ Garlic & Lemon | Garlic Bread Stick | Grilled Chicken Breast | Regular Fries</p>
-            </div>
-
-            {/* Tuesday Box */}
-            <div className="border-2 border-accent rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Tuesday</h2>
-              <p className="text-center">Chicken Soft & Barbacoa Beef Tacos | Taco Salad | Spanish Style Corn | Cilantro Lime Rice | Red Beans & Rice | Mexican Quinoa | Crinkle Cut Fries</p>
-            </div>
-
-            {/* Wednesday Box */}
-            <div className="border-2 border-accent rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Wednesday</h2>
-              <p className="text-center">Sweet & Sour Chicken | Vegetable Fried Rice | Vegetable Blend Mandarin Stir Fry | Vegetable Egg Rolls | Regular Fries</p>
-            </div>
-
-            {/* Thursday Box */}
-            <div className="border-2 border-accent rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Thursday</h2>
-              <p className="text-center">BBQ Chopped Chicken | Baked Mac & Cheese | Vegetable Blend California Normandy | Vegetarian Baked Beans | Regular Fries</p>
-            </div>
-
-            {/* Friday Box */}
-            <div className="border-2 border-accent rounded-lg p-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Friday</h2>
-              <p className="text-center">Seared Balsamic Salmon Fillet | Tuscan Style Roasted Potatoes | Quinoa Pilaf | Greek Spinach | Tuscan Zucchini & Tomatoes | Waffle Fries</p>
-            </div>
-
+  <div className="grille-shell flex flex-col bg-background text-text">
+    <div className="w-full flex flex-row justify-end items-center pt-4 pb-2 px-2 sm:px-4"><HamburgerMenu /></div>
+    <main className="grille-page">
+      <header className="grille-header"><h1>Grille menu</h1></header>
+      <nav className="grille-day-picker" aria-label="Choose a menu day">
+        {menu.map(({ day }) => <button key={day} type="button" aria-pressed={selectedDay === day} onClick={() => setSelectedDay(day)}>{day.slice(0, 3)}</button>)}
+      </nav>
+      <div className="grille-days">
+        {menu.map(({ day, mains, sides }) => <section className={`grille-day${selectedDay === day ? ' grille-day--selected' : ''}`} key={day} aria-labelledby={`grille-${day}`}>
+          <h2 id={`grille-${day}`}>{day}</h2>
+          <div className="grille-day__food">
+            <ul className="grille-mains" aria-label={`${day} main dishes`}>{mains.map(item => <li key={item}>{item}</li>)}</ul>
+            <ul className="grille-sides" aria-label={`${day} sides`}>{sides.map(item => <li key={item}>{item}</li>)}</ul>
           </div>
-        </div>
+        </section>)}
       </div>
-      <FooterNote />
-    </div>
+    </main>
+    <FooterNote />
+  </div>
   );
 };
 

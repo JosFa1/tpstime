@@ -3,7 +3,8 @@ export function initializeThemeFromSystemPreference() {
   const SAVED_KEY = 'savedThemes';
   const SELECTED_ID_KEY = 'selectedCustomThemeId';
 
-  const mode = (localStorage.getItem(MODE_KEY) as 'dark' | 'light' | 'system' | 'custom' | null) || 'dark';
+  const savedMode = localStorage.getItem(MODE_KEY) as 'dark' | 'light' | 'system' | 'custom' | null;
+  const mode = savedMode || 'custom';
   const root = document.documentElement;
 
   function clearInlineVars() {
@@ -44,8 +45,9 @@ export function initializeThemeFromSystemPreference() {
       const selectedId = localStorage.getItem(SELECTED_ID_KEY);
       const selected = Array.isArray(saved) ? saved.find((t: any) => t.id === selectedId) || saved[0] : null;
       if (selected?.vars) applyVars(selected.vars as Record<string, string>);
+      else if (!savedMode) root.setAttribute('data-theme', 'trinity');
     } catch {
-      // ignore
+      if (!savedMode) root.setAttribute('data-theme', 'trinity');
     }
   }
 }

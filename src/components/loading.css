@@ -1,0 +1,71 @@
+.skeleton-layout { width: 100%; }
+.skeleton-bar { --skeleton-base: color-mix(in srgb, var(--color-text) 10%, var(--color-surface)); --skeleton-highlight: color-mix(in srgb, var(--color-primary) 35%, var(--color-text)); position: relative; overflow: hidden; border-radius: .4rem; height: 1rem; background: var(--color-border); background: var(--skeleton-fill, color-mix(in srgb, var(--color-primary) 18%, var(--skeleton-base))); }
+.skeleton-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 15%, color-mix(in srgb, var(--skeleton-highlight) var(--skeleton-shimmer-strength, 20%), transparent) 50%, transparent 85%); transform: translateX(-100%); animation: skeleton-sweep 1.6s ease-in-out 3; }
+[data-custom-theme="hay"] { --skeleton-fill: color-mix(in srgb, var(--color-primary) 5%, var(--color-background)); --skeleton-shimmer-strength: 8%; }
+@keyframes skeleton-sweep { to { transform: translateX(100%); } }
+.skeleton-layout--timer { max-width: 100%; }
+.skeleton-caption { width: 35%; height: 1.5rem; margin: .35rem auto 0; }
+.skeleton-timer { width: min(90%, 52rem); height: clamp(5rem, 18vw, 16rem); margin: clamp(1rem, 5vh, 3rem) auto clamp(1.5rem, 7vh, 5rem); }
+.skeleton-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; width: min(100%, 52rem); margin: 0 auto; }
+.skeleton-summary > div { display: grid; gap: 1rem; }
+.skeleton-summary .skeleton-bar:first-child { width: 60%; height: .85rem; }
+.skeleton-summary .skeleton-bar:last-child { height: clamp(1.25rem, 1.7vw, 1.8rem); }
+.skeleton-row { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 4.5rem; padding: .75rem 0; }
+.skeleton-row > :first-child { width: 32%; }
+.skeleton-row > :last-child { width: 43%; }
+.skeleton-layout--schedule .skeleton-row { min-height: clamp(3rem, 5.5vw, 5.5rem); }
+.skeleton-layout--schedule .skeleton-row > .skeleton-bar { height: clamp(1.25rem, 3.5vw, 3rem); }
+.skeleton-layout--houses .skeleton-row { min-height: 7.5rem; margin-bottom: 1rem; padding: .75rem; border: 1px solid var(--color-border); border-radius: .75rem; background: var(--color-surface); }
+.skeleton-layout--houses .skeleton-house-logo { width: 6rem; height: 6rem; flex: none; border-radius: 1rem; }
+.skeleton-layout--houses .skeleton-row > :nth-child(2) { height: 1.75rem; width: 40%; margin-right: auto; }
+.skeleton-layout--houses .skeleton-row > :last-child { height: 2rem; width: 3rem; flex: none; }
+.skeleton-layout--lightning { min-height: 13rem; }
+.skeleton-alert { min-height: 5.5rem; display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: .65rem; background: var(--color-background); }
+.skeleton-alert .skeleton-icon { width: 1.5rem; height: 1.5rem; flex: none; }
+.skeleton-alert-copy { flex: 1; display: grid; gap: .6rem; }
+.skeleton-alert-copy > :first-child { width: 45%; height: 1.25rem; }
+.skeleton-alert-copy > :last-child { width: 75%; }
+.skeleton-sensor { width: 6rem; height: .875rem; }
+.skeleton-body { width: 70%; height: 1.25rem; margin: 1.5rem 0; }
+.skeleton-short { width: 6rem; height: 1rem; margin-top: 2rem; }
+.skeleton-page-title { width: 45%; height: 2rem; margin: 0 auto 2rem; }
+.skeleton-layout--settings .skeleton-page-title { width: 10rem; height: 3rem; margin: 0 0 2rem; }
+.skeleton-settings-body { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 52px; }
+.skeleton-settings-nav { display: grid; align-content: start; gap: 1.5rem; padding-top: 1rem; }
+.skeleton-settings-nav > div { width: 6rem; }
+.skeleton-settings-options { display: flex; gap: .5rem; margin: 1.5rem 0; }
+.skeleton-settings-options > div { flex: 1; height: 44px; }
+.skeleton-theme-preview { width: min(100%, 16rem); height: 9rem; margin: 0 auto 1rem; border-radius: .75rem; }
+.skeleton-settings-body .skeleton-row > :last-child { height: 44px; }
+.skeleton-weekdays { display: flex; gap: .55rem; }
+.skeleton-weekdays > div { width: 44px; height: 44px; flex: none; }
+.page-loading { min-height: 100vh; background: var(--color-background); color: var(--color-text); }
+.page-loading-header { min-height: 76px; padding: 1rem; display: flex; justify-content: space-between; gap: 2rem; }
+.page-loading-header > div { width: min(30%, 15rem); height: 44px; }
+.page-loading-content { width: min(calc(100% - 3rem), 960px); margin: 3rem auto; }
+.page-loading-content--timer { width: min(calc(100% - 3rem), 1102px); padding-top: clamp(2rem, 8vh, 5.5rem); margin-top: 0; }
+.page-loading-content--settings { max-width: 1384px; }
+@media (max-width: 819px) {
+  .skeleton-settings-body { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .skeleton-settings-nav { display: flex; gap: 1.5rem; padding-top: 0; }
+  .skeleton-settings-nav > div { width: 4rem; }
+}
+.request-message { display: grid; justify-items: center; gap: .75rem; padding: 1.5rem 1rem; color: var(--color-text-secondary); text-align: center; }
+.request-message button { border: 1px solid var(--color-primary); border-radius: .5rem; color: var(--color-primary); padding: .5rem 1rem; }
+.demo-notice { padding: .4rem 1rem; background: var(--color-surface); color: var(--color-text-secondary); text-align: center; font-size: .8rem; }
+@media (max-width: 760px) {
+  .skeleton-summary { grid-template-columns: 1fr; gap: 1.25rem; }
+  .skeleton-summary > div { padding: .65rem 0; border-bottom: 1px solid var(--color-border); }
+  .skeleton-summary .skeleton-bar { width: 55%; }
+  .skeleton-layout--schedule .skeleton-row { gap: 1rem; }
+  .skeleton-layout--schedule .skeleton-row > :last-child { width: 52%; }
+  .skeleton-layout--houses .skeleton-house-logo { width: 4rem; height: 4rem; }
+  .skeleton-layout--houses .skeleton-row { gap: .75rem; min-height: 6rem; }
+  .skeleton-alert { flex-wrap: wrap; }
+  .skeleton-alert-copy { min-width: 60%; }
+  .skeleton-sensor { margin-left: 2.5rem; }
+  .skeleton-weekdays { justify-content: space-between; }
+  .page-loading-header { min-height: 136px; }
+  .page-loading-content--timer { padding-top: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) { .skeleton-bar::after { animation: none; display: none; } }

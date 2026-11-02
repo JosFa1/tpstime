@@ -29,6 +29,15 @@ module.exports = {
     host: '0.0.0.0',
     port: 3000,
     allowedHosts: 'all',
+    // Same-origin access to the official feed during local development.
+    proxy: {
+      '/api/lightning-alert': {
+        target: 'https://cdn-oas.api.earthnetworks.com',
+        changeOrigin: true,
+        pathRewrite: { '^/api/lightning-alert': '/OASWidget.ashx?widgetId=6d55256e-909d-461e-80a3-8f8ae8dcb635&firstCall=1' },
+        proxyTimeout: 9000,
+      },
+    },
         
     // Headers to prevent issues with proxies
     headers: {
