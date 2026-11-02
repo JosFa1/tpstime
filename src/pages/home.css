@@ -10,21 +10,22 @@
 .home-header { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.5rem 1rem; }
 .home-days { flex: 1; min-width: 0; }
 .weekday-strip { display: flex; align-items: center; gap: 0.55rem; }
-.weekday { width: 42px; height: 42px; flex: none; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--home-gold); font-size: 1.2rem; cursor: pointer; }
+.weekday { width: 42px; height: 42px; flex: none; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--home-gold); font-size: 1.55rem; font-weight: 650; line-height: 1; cursor: pointer; }
 .weekday.today { border-color: var(--home-gold); box-shadow: inset 0 0 0 1px var(--home-gold); font-weight: 700; }
 .weekday.off { opacity: .45; }
-.home-tabs { display: flex; align-items: center; gap: .25rem; }
-.home-tablist { display: flex; align-items: center; gap: .25rem; }
+.home-tabs { display: flex; align-items: center; gap: .75rem; }
+.home-tablist { display: flex; align-items: center; gap: 1.25rem; }
 .home-shell [hidden] { display: none !important; }
 .weekday { min-width: 44px; min-height: 44px; }
 .weekday.selected { background: var(--color-surface); border-color: var(--home-gold); font-weight: 700; }
 .weekday.off { opacity: 1; color: var(--color-text-secondary); }
-.home-tab { min-height: 54px; display: inline-flex; align-items: center; gap: .6rem; padding: 0 .9rem; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-text-secondary, #e7ecf6); font-size: .95rem; white-space: nowrap; cursor: pointer; }
-.home-tab.active { border-color: var(--home-gold); color: var(--home-gold); }
+.home-tab { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: 0 .15rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--color-text-secondary, #e7ecf6); font-size: .95rem; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.home-tab.active { border-bottom-color: var(--home-gold); color: var(--home-gold); }
+.home-tab svg { width: 20px; height: 20px; flex: none; }
 .home-tab { transition: color 140ms ease, border-color 140ms ease; }
-.home-tab:focus-visible { outline: none; border-radius: 0; box-shadow: inset 0 -3px var(--color-text); }
+.home-tab:focus-visible { outline: 2px solid var(--home-gold); outline-offset: 2px; }
 [role="tabpanel"]:focus-visible { outline: none; }
-@media (hover: hover) { .home-tab:hover { color: var(--home-gold); border-bottom-color: var(--home-gold); background: transparent; box-shadow: none; } .home-tab:focus-visible:hover { box-shadow: inset 0 -3px var(--color-text); } }
+@media (hover: hover) { .home-tab:hover { color: var(--home-gold); } }
 .home-progress { height: 8px; margin: 0 1rem; overflow: hidden; border-radius: 10px; background: var(--color-surface); }
 .home-progress div { height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--color-primary),var(--color-secondary),var(--color-accent),var(--color-primary)); transition: width .5s; }
 .timer-view { width: min(100%, 1150px); min-height: 75vh; margin: 0 auto; padding: clamp(2rem, 8vh, 5.5rem) 1.5rem 2rem; display: flex; flex-direction: column; align-items: center; }
@@ -32,7 +33,7 @@
 .timer-content { width: fit-content; max-width: 100%; }
 .timer-content:not(:has(.timer-digits)) { width: min(100%, 700px); }
 .timer-clock { width: fit-content; max-width: 100%; margin: clamp(1rem, 5vh, 3rem) auto clamp(1.5rem, 7vh, 5rem); }
-.timer-digits { margin: 0; color: var(--home-gold); font-family: ui-sans-serif, system-ui, sans-serif; font-size: clamp(5rem, 19vw, 19rem); font-weight: 750; line-height: .95; letter-spacing: -.065em; text-align: center; font-variant-numeric: tabular-nums; }
+.timer-digits { margin: 0; color: var(--home-gold); font-family: var(--font-sans); font-size: clamp(5rem, 19vw, 19rem); font-weight: 750; line-height: .95; letter-spacing: -.065em; text-align: center; font-variant-numeric: tabular-nums; }
 .timer-digits--long { font-size: clamp(3.2rem, 15vw, 17rem); }
 .home-shell .text-primary { color: var(--home-gold); }
 .home-shell .text-secondary, .home-shell .text-text-secondary { color: var(--color-text-secondary); }
@@ -68,7 +69,8 @@ html[data-dyslexic-font] .schedule-row { font-size: clamp(1.125rem, 2.5vw, 2rem)
   .weekday-strip { justify-content: space-between; }
   .weekday { width: 38px; height: 38px; }
   .home-tabs { width: 100%; justify-content: space-between; }
-  .home-tab { min-height: 46px; padding: 0 .3rem; font-size: .78rem; }
+  .home-tablist { min-width: 0; gap: .75rem; }
+  .home-tab { min-height: 46px; padding: 0 .15rem; font-size: .875rem; }
   .home-tab span { margin-right: .25rem; }
   .timer-view { min-height: 68vh; padding: 2rem 1rem; }
   .timer-content, .timer-clock { width: 100%; }
@@ -88,10 +90,9 @@ html[data-dyslexic-font] .schedule-row { font-size: clamp(1.125rem, 2.5vw, 2rem)
   .weekday-strip, .skeleton-weekdays { gap: .1rem; }
   .home-tabs { display: contents; }
   .home-tablist { grid-area: tabs; }
-  .home-tablist { flex: 1; min-width: 0; align-items: stretch; }
+  .home-tablist { flex: 1; min-width: 0; align-items: stretch; gap: .75rem; }
   .home-tabs > :last-child { grid-area: menu; flex: none; margin-left: 0; }
-  .home-tab { flex: 1; min-width: 0; flex-direction: column; justify-content: center; gap: .2rem; min-height: 54px; padding: .25rem .15rem; font-size: .72rem; white-space: normal; overflow-wrap: anywhere; }
+  .home-tab { flex: 1; min-width: 0; flex-direction: column; justify-content: center; gap: .2rem; min-height: 54px; padding: .25rem .15rem; font-size: .8125rem; white-space: normal; overflow-wrap: anywhere; }
   .home-tab:first-child { flex: .75; }
   .home-tab:last-child { flex: 1.4; }
-  .home-tab svg { width: 18px; height: 18px; }
 }

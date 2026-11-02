@@ -13,7 +13,17 @@ export function Skeleton({ shape, label = 'Loading…' }: { shape: Shape; label?
         <div className="skeleton-summary">{[0, 1, 2].map(i => <div key={i}><div className="skeleton-bar" /><div className="skeleton-bar" /></div>)}</div>
       </> : shape === 'weekdays' ? <div className="skeleton-weekdays">{[0, 1, 2, 3, 4].map(i => <div key={i} className="skeleton-bar" />)}</div>
       : shape === 'lightning' ? <><div className="skeleton-alert"><div className="skeleton-bar skeleton-icon" /><div className="skeleton-alert-copy"><div className="skeleton-bar" /><div className="skeleton-bar" /></div><div className="skeleton-bar skeleton-sensor" /></div><div className="skeleton-bar skeleton-body" /><div className="skeleton-bar skeleton-short" /></>
-      : shape === 'settings' ? <><div className="skeleton-bar skeleton-page-title" /><div className="skeleton-settings-card"><div className="skeleton-bar skeleton-caption" /><div className="skeleton-settings-options">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton-bar" />)}</div><div className="skeleton-bar skeleton-theme-preview" /></div><div className="skeleton-settings-card">{[0, 1, 2, 3].map(i => <div className="skeleton-row" key={i}><div className="skeleton-bar" /><div className="skeleton-bar" /></div>)}</div></>
+      : shape === 'settings' ? <>
+        <div className="skeleton-bar skeleton-page-title" />
+        <div className="skeleton-settings-body">
+          <div className="skeleton-settings-nav">{[0, 1, 2].map(i => <div key={i} className="skeleton-bar" />)}</div>
+          <div>
+            <div className="skeleton-settings-options">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton-bar" />)}</div>
+            <div className="skeleton-bar skeleton-theme-preview" />
+            {[0, 1, 2].map(i => <div className="skeleton-row" key={i}><div className="skeleton-bar" /><div className="skeleton-bar" /></div>)}
+          </div>
+        </div>
+      </>
       : <>{shape === 'houses' && <div className="skeleton-bar skeleton-page-title" />}{Array.from({ length: shape === 'houses' ? 6 : 5 }, (_, i) => <div className="skeleton-row" key={i}>{shape === 'houses' && <div className="skeleton-bar skeleton-house-logo" />}<div className="skeleton-bar" /><div className="skeleton-bar" /></div>)}</>}
     </div>
   </div>;

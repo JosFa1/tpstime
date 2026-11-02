@@ -29,11 +29,14 @@
 .skeleton-body { width: 70%; height: 1.25rem; margin: 1.5rem 0; }
 .skeleton-short { width: 6rem; height: 1rem; margin-top: 2rem; }
 .skeleton-page-title { width: 45%; height: 2rem; margin: 0 auto 2rem; }
-.skeleton-settings-card { padding: 1rem; margin-bottom: 1.5rem; border: 1px solid var(--color-border); border-radius: .5rem; background: var(--color-surface); }
+.skeleton-layout--settings .skeleton-page-title { width: 10rem; height: 3rem; margin: 0 0 2rem; }
+.skeleton-settings-body { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 52px; }
+.skeleton-settings-nav { display: grid; align-content: start; gap: 1.5rem; padding-top: 1rem; }
+.skeleton-settings-nav > div { width: 6rem; }
 .skeleton-settings-options { display: flex; gap: .5rem; margin: 1.5rem 0; }
 .skeleton-settings-options > div { flex: 1; height: 44px; }
 .skeleton-theme-preview { width: min(100%, 16rem); height: 9rem; margin: 0 auto 1rem; border-radius: .75rem; }
-.skeleton-settings-card .skeleton-row > :last-child { height: 44px; }
+.skeleton-settings-body .skeleton-row > :last-child { height: 44px; }
 .skeleton-weekdays { display: flex; gap: .55rem; }
 .skeleton-weekdays > div { width: 44px; height: 44px; flex: none; }
 .page-loading { min-height: 100vh; background: var(--color-background); color: var(--color-text); }
@@ -41,7 +44,12 @@
 .page-loading-header > div { width: min(30%, 15rem); height: 44px; }
 .page-loading-content { width: min(calc(100% - 3rem), 960px); margin: 3rem auto; }
 .page-loading-content--timer { width: min(calc(100% - 3rem), 1102px); padding-top: clamp(2rem, 8vh, 5.5rem); margin-top: 0; }
-.page-loading-content--settings { max-width: 448px; }
+.page-loading-content--settings { max-width: 1384px; }
+@media (max-width: 819px) {
+  .skeleton-settings-body { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .skeleton-settings-nav { display: flex; gap: 1.5rem; padding-top: 0; }
+  .skeleton-settings-nav > div { width: 4rem; }
+}
 .request-message { display: grid; justify-items: center; gap: .75rem; padding: 1.5rem 1rem; color: var(--color-text-secondary); text-align: center; }
 .request-message button { border: 1px solid var(--color-primary); border-radius: .5rem; color: var(--color-primary); padding: .5rem 1rem; }
 .demo-notice { padding: .4rem 1rem; background: var(--color-surface); color: var(--color-text-secondary); text-align: center; font-size: .8rem; }

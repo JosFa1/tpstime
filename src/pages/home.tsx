@@ -110,7 +110,7 @@ function Home() {
               const next = event.key === 'ArrowRight' ? (index + 1) % 3 : event.key === 'ArrowLeft' ? (index + 2) % 3 : event.key === 'Home' ? 0 : event.key === 'End' ? 2 : null;
               if (next !== null) { event.preventDefault(); tabButtons.current[next]?.focus(); }
             }}>
-              <Icon aria-hidden="true" size={22} strokeWidth={1.8} />{label}
+              <Icon aria-hidden="true" size={20} strokeWidth={1.8} />{label}
             </button>
           ))}
           </div>

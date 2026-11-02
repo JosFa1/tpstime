@@ -1,22 +1,18 @@
-.whats-new { width: min(54rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); padding: clamp(1.35rem, 4vw, 2.5rem); border: 1px solid #31547e; border-radius: 22px; background: #0b2341; color: #f7f9fd; box-shadow: 0 24px 80px #0009; }
-.whats-new::backdrop { background: #000b; }
-.whats-new__header { max-width: 37rem; }
-.whats-new h1 { margin: 0; color: #fff; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 750; line-height: 1.05; letter-spacing: -.02em; }
-.whats-new__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin: 1.6rem 0; }
-.whats-new__card { position: relative; min-width: 0; padding: .75rem; border: 1px solid #315072; border-radius: 14px; background: #112f52; }
-.whats-new__art { position: relative; height: 116px; display: flex; align-items: center; justify-content: center; gap: 1rem; border-radius: 9px; background: #091d35; color: #ffc13b; }
-
-.whats-new__art--themes { gap: .45rem; color: #d5e4f4; }
-.whats-new__art--timer svg:last-child, .whats-new__art--lightning svg:last-child { color: #8ca8ee; }
-.whats-new__art--themes span { display: grid; place-items: center; width: 27px; height: 48px; border-radius: 8px; background: #ffc13b; color: #0b2341; transform: rotate(-8deg); }
-.whats-new__art--themes span:nth-child(2) { background: #eb8e80; transform: rotate(-3deg); }
-.whats-new__art--themes span:nth-child(3) { background: #8ca8ee; transform: rotate(3deg); }
-.whats-new__art--themes span:nth-child(4) { background: #86c6aa; transform: rotate(8deg); }
-.whats-new__art--themes > svg { margin-left: .4rem; }
-.whats-new__card h2 { display: flex; align-items: center; gap: .45rem; margin: 1rem 0 .4rem; color: #fff; font-size: .95rem; }
-.whats-new__card h2 svg { flex: none; color: #ffc13b; }
-.whats-new__card p { margin: 0; color: #b8c9dc; font-size: .85rem; line-height: 1.45; }
+.whats-new { width: min(36rem, calc(100% - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); overflow-y: auto; padding: 2rem; border: 1px solid #315072; border-radius: 10px; background: #0b2341; color: #f7f9fd; box-shadow: 0 16px 48px #0006; }
+.whats-new::backdrop { background: #0009; }
+.whats-new h1 { margin: 0; color: #fff; font-size: 1.875rem; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; }
+.whats-new h1:focus { outline: none; }
+.whats-new__header p { margin: .4rem 0 0; color: #b8c9dc; font-size: 1rem; }
+.whats-new__updates { display: grid; gap: 1.25rem; margin: 1.75rem 0 2rem; padding: 0; list-style: none; }
+.whats-new__updates h2 { margin: 0 0 .2rem; color: #fff; font-size: 1.125rem; font-weight: 600; line-height: 1.35; }
+.whats-new__updates p { margin: 0; color: #b8c9dc; font-size: 1.0625rem; line-height: 1.45; }
 .whats-new__footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.whats-new__footer small { color: #a7bdd2; font-size: .7rem; }
-.whats-new__footer button { min-height: 44px; padding: .7rem 1.15rem; border: 0; border-radius: 9px; background: #ffc13b; color: #0b2341; font-weight: 700; cursor: pointer; }
-@media (max-width: 600px) { .whats-new__cards { grid-template-columns: 1fr; } .whats-new__card { display: grid; grid-template-columns: 100px 1fr; column-gap: .8rem; align-items: center; } .whats-new__art { grid-row: span 2; height: 84px; gap: .3rem; } .whats-new__art--themes span { width: 14px; height: 35px; } .whats-new__art--themes span svg { width: 12px; height: 12px; } .whats-new__art--timer svg, .whats-new__art--lightning svg { width: 28px; height: 28px; } .whats-new__art--themes > svg { width: 17px; height: 17px; margin-left: .1rem; } .whats-new__card h2 { margin: 0; } .whats-new__card p { margin-top: .3rem; } }
+.whats-new__footer small { color: #b8c9dc; font-size: .875rem; }
+.whats-new__footer button { min-height: 44px; min-width: 88px; padding: .55rem 1.25rem; border: 0; border-radius: 4px; background: #ffc13b; color: #0b2341; font: inherit; font-weight: 650; cursor: pointer; }
+.whats-new__footer button:hover { background: #ffd06a; }
+.whats-new__footer button:focus-visible { outline: 2px solid #ffc13b; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .whats-new { width: calc(100% - 1.5rem); max-height: calc(100dvh - 1.5rem); padding: 1.5rem; }
+  .whats-new h1 { font-size: 1.75rem; }
+  .whats-new__updates { gap: 1rem; margin: 1.5rem 0; }
+}

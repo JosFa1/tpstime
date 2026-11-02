@@ -7,7 +7,9 @@ beforeEach(() => localStorage.clear());
 
 test('shows the announcement once after dismissal', () => {
   const view = render(<WhatsNew />);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Made by Jason Wang');
+  const announcement = screen.getByRole('dialog', { name: "What's new in TPSTime" });
+  expect(announcement).toHaveTextContent('Version 3');
+  expect(announcement).toHaveTextContent('Made by Jason Wang');
   fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   view.unmount();

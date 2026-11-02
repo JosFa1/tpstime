@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CalendarDays, Clock3, Cloud, Palette, Zap } from 'lucide-react';
 import './WhatsNew.css';
 
 const STORAGE_KEY = 'tpstime-whats-new-redesign-2026';
@@ -21,26 +20,28 @@ export default function WhatsNew() {
 
   if (!visible) return null;
   return <dialog ref={dialog} className="whats-new" aria-labelledby="whats-new-title" onClose={dismiss}>
-    <div className="whats-new__header">
-      <h1 id="whats-new-title">What's new in TPSTime v3</h1>
-    </div>
-    <div className="whats-new__cards">
-      <article className="whats-new__card">
-        <div className="whats-new__art whats-new__art--timer" aria-hidden="true"><Clock3 size={42} strokeWidth={1.7} /><CalendarDays size={36} strokeWidth={1.7} /></div>
-        <h2><CalendarDays size={17} aria-hidden="true" /> Cleaner UI and Features</h2>
-        <p>A refreshed timer and schedule, a mini timer, house rankings and history, and a redesigned Grille menu.</p>
-      </article>
-      <article className="whats-new__card">
-        <div className="whats-new__art whats-new__art--lightning" aria-hidden="true"><Cloud size={42} strokeWidth={1.7} /><Zap size={36} strokeWidth={1.7} /></div>
-        <h2><Zap size={17} aria-hidden="true" /> Lightning Alert</h2>
-        <p>Select Lightning Alert at the top to check campus conditions.</p>
-      </article>
-      <article className="whats-new__card">
-        <div className="whats-new__art whats-new__art--themes" aria-hidden="true"><span /><span /><span /><span /><Palette size={27} /></div>
-        <h2><Palette size={17} aria-hidden="true" /> Settings</h2>
-        <p>Open Menu &rarr; Settings to name your classes, choose a theme, and adjust your display.</p>
-      </article>
-    </div>
+    <header className="whats-new__header">
+      <h1 id="whats-new-title" tabIndex={-1} autoFocus>What's new in TPSTime</h1>
+      <p>Version 3</p>
+    </header>
+    <ul className="whats-new__updates">
+      <li>
+        <h2>Timer &amp; schedule</h2>
+        <p>A refreshed daily view, with a mini timer.</p>
+      </li>
+      <li>
+        <h2>Lightning Alert</h2>
+        <p>Check campus conditions from the Lightning Alert tab.</p>
+      </li>
+      <li>
+        <h2>House standings &amp; Grille</h2>
+        <p>House rankings and points history, plus a clearer Grille menu.</p>
+      </li>
+      <li>
+        <h2>Settings</h2>
+        <p>Edit class names, themes and display in Menu &rarr; Settings.</p>
+      </li>
+    </ul>
     <div className="whats-new__footer"><small>Made by Jason Wang</small><button type="button" onClick={dismiss}>Got it</button></div>
   </dialog>;
 }

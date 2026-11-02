@@ -83,12 +83,12 @@ const Houses: React.FC = () => {
           {!loading && !error && week && !hasPoints && <p className="text-center text-text-secondary">House points have not been published yet.</p>}
 
           {week && hasPoints && <div className="grid grid-cols-1 gap-4 sm:gap-6">
-            {ranked.map((house) => {
+            {ranked.map((house, index) => {
               const rank = (scores: Record<string, number>) => 1 + HOUSES.filter(h => scores[h.id] > scores[house.id]).length;
               const currentScores = Object.fromEntries(houses.map(h => [h.id, h.score]));
               const change = previousScores ? rank(previousScores) - rank(currentScores) : 0;
               return (
-              <div key={house.id} className="bg-surface border-2 border-accent rounded-lg px-3 py-2 flex items-center justify-between">
+              <div key={house.id} className="house-standing bg-surface border-2 border-accent rounded-lg px-3 py-2 flex items-center justify-between" style={{ animationDelay: `${index * 65}ms` }}>
                 <div className="flex items-center gap-3">
                   <img 
                     src={houseLogos[house.id]} 

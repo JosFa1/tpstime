@@ -55,3 +55,41 @@ test('keeps adaptive text readable on both light surfaces', async () => {
   fireEvent.change(screen.getByLabelText('Text'), { target: { value: '#212121' } });
   await waitFor(() => expect(document.documentElement.style.getPropertyValue('--color-text-secondary')).toBe('#676767'));
 });
+
+test('selects a preset without duplicating it and exposes its selected state', () => {
+  localStorage.clear();
+  render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
+  fireEvent.click(screen.getByText('More themes'));
+  const nord = screen.getByRole('button', { name: 'Nord' });
+  fireEvent.click(nord);
+  expect(nord).toHaveAttribute('aria-pressed', 'true');
+  expect(document.documentElement.style.getPropertyValue('--color-background')).toBe('#2E3440');
+  const count = JSON.parse(localStorage.getItem('savedThemes')!).length;
+  fireEvent.click(screen.getByRole('button', { name: 'Dark' }));
+  expect(nord).toHaveAttribute('aria-pressed', 'false');
+  fireEvent.click(nord);
+  expect(nord).toHaveAttribute('aria-pressed', 'true');
+  expect(JSON.parse(localStorage.getItem('savedThemes')!)).toHaveLength(count);
+});
+
+test('shows clear-all only inside advanced colors and respects confirmation', () => {
+  localStorage.clear();
+  render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
+  fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+  const count = JSON.parse(localStorage.getItem('savedThemes')!).length;
+  expect(screen.getByRole('button', { name: 'Remove all custom themes' })).not.toBeVisible();
+  fireEvent.click(screen.getByText('Advanced colors'));
+  const clear = screen.getByRole('button', { name: 'Remove all custom themes' });
+  expect(clear).toBeVisible();
+  const confirm = jest.spyOn(window, 'confirm').mockReturnValue(false);
+  try {
+    fireEvent.click(clear);
+    expect(JSON.parse(localStorage.getItem('savedThemes')!)).toHaveLength(count);
+    confirm.mockReturnValue(true);
+    fireEvent.click(clear);
+    expect(JSON.parse(localStorage.getItem('savedThemes')!)).toHaveLength(count - 1);
+    expect(screen.getByLabelText('Theme Name')).toHaveValue('Hay');
+  } finally {
+    confirm.mockRestore();
+  }
+});

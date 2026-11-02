@@ -30,3 +30,19 @@ test('does not claim movement without a previous published score', () => {
   render(<Houses />);
   expect(screen.queryByLabelText(/since the last house points update/)).toBeNull();
 });
+
+test.each([false, true])('shows loading placeholders only while points are loading (reduced motion: %s)', reduceMotion => {
+  document.documentElement.toggleAttribute('data-reduce-motion', reduceMotion);
+  try {
+    mockedSchedule.mockReturnValue({ week: null, loading: true, error: null, refreshing: true, reload: jest.fn() });
+    const view = render(<Houses />);
+    expect(screen.getByText('Loading house points…')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /Hay/ })).toBeNull();
+    mockedSchedule.mockReturnValue(result(week(10, 5)));
+    view.rerender(<Houses />);
+    expect(screen.queryByText('Loading house points…')).toBeNull();
+    expect(screen.getByRole('heading', { name: /Hay/ })).toBeInTheDocument();
+  } finally {
+    document.documentElement.removeAttribute('data-reduce-motion');
+  }
+});
