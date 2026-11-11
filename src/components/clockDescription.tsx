@@ -60,7 +60,7 @@ const ClockDescription: React.FC<ClockDescriptionProps> = ({ schedule }) => {
 
   // Render the description with appropriate styling
   return (
-    <div className="w-full flex justify-center">
+    <div className="timer-description w-full flex justify-center">
   <p className="text-primary text-lg md:text-2xl text-center">
         {description}
       </p>

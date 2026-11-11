@@ -12,6 +12,8 @@ jest.mock('../localPreview', () => ({ localPreview: true }));
 const reload = jest.fn();
 beforeEach(() => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   reload.mockClear();
   (useSchedule as jest.Mock).mockReturnValue({ week: { themes: [] }, loading: false, refreshing: false, error: null, reload });
 });
@@ -40,6 +42,8 @@ it('keeps display preferences and progress notifications working after category 
     const view = openSettings();
     userEvent.click(screen.getByRole('button', { name: 'Display' }));
     userEvent.selectOptions(screen.getByLabelText('Default tab'), 'schedule');
+    fireEvent.change(screen.getByRole('slider', { name: /Clock text spacing/ }), { target: { value: '8' } });
+    expect(screen.getByLabelText('Clock spacing preview')).toHaveStyle({ letterSpacing: '0.08em' });
     userEvent.click(screen.getByLabelText('Show progress bar'));
     userEvent.click(screen.getByText('Advanced display options'));
     userEvent.selectOptions(screen.getByLabelText('Time format'), '24h');
@@ -53,6 +57,7 @@ it('keeps display preferences and progress notifications working after category 
     openSettings();
     userEvent.click(screen.getByRole('button', { name: 'Display' }));
     expect(screen.getByLabelText('Default tab')).toHaveValue('schedule');
+    expect(screen.getByRole('slider', { name: /Clock text spacing/ })).toHaveValue('8');
     expect(screen.getByLabelText('Show progress bar')).not.toBeChecked();
     userEvent.click(screen.getByText('Advanced display options'));
     expect(screen.getByLabelText('Time format')).toHaveValue('24h');

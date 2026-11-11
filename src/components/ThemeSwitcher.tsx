@@ -46,9 +46,10 @@ const ThemeSwitcher: React.FC<{ themes?: PublishedTheme[]; loading?: boolean }> 
         <div>
           <div className="settings-section-heading"><h2>Theme</h2></div>
           <div className="theme-modes" aria-label="Theme mode">
-            <ModeButton active={mode === 'dark'} onClick={() => setMode('dark')}>Dark</ModeButton>
+            <ModeButton active={mode === 'thanksgiving'} onClick={() => setMode('thanksgiving')}>Thanksgiving</ModeButton>
             <ModeButton active={mode === 'system'} onClick={() => setMode('system')}>System</ModeButton>
             <ModeButton active={mode === 'light'} onClick={() => setMode('light')}>Light</ModeButton>
+            <ModeButton active={mode === 'dark'} onClick={() => setMode('dark')}>Dark</ModeButton>
             <ModeButton active={mode === 'custom'} onClick={() => setMode('custom')}>Custom</ModeButton>
           </div>
         </div>

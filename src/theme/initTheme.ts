@@ -1,10 +1,10 @@
+import { readThemeMode, thanksgiving } from './thanksgiving';
+
 export function initializeThemeFromSystemPreference() {
-  const MODE_KEY = 'themeMode';
   const SAVED_KEY = 'savedThemes';
   const SELECTED_ID_KEY = 'selectedCustomThemeId';
 
-  const savedMode = localStorage.getItem(MODE_KEY) as 'dark' | 'light' | 'system' | 'custom' | null;
-  const mode = savedMode || 'custom';
+  const mode = readThemeMode();
   const root = document.documentElement;
 
   function clearInlineVars() {
@@ -32,7 +32,10 @@ export function initializeThemeFromSystemPreference() {
   root.removeAttribute('data-theme');
   clearInlineVars();
 
-  if (mode === 'dark') {
+  if (mode === 'thanksgiving') {
+    root.setAttribute('data-theme', 'thanksgiving');
+    applyVars(thanksgiving);
+  } else if (mode === 'dark') {
     root.classList.add('dark');
   } else if (mode === 'light') {
     root.setAttribute('data-theme', 'light');
@@ -45,9 +48,6 @@ export function initializeThemeFromSystemPreference() {
       const selectedId = localStorage.getItem(SELECTED_ID_KEY);
       const selected = Array.isArray(saved) ? saved.find((t: any) => t.id === selectedId) || saved[0] : null;
       if (selected?.vars) applyVars(selected.vars as Record<string, string>);
-      else if (!savedMode) root.setAttribute('data-theme', 'trinity');
-    } catch {
-      if (!savedMode) root.setAttribute('data-theme', 'trinity');
-    }
+    } catch { /* The provider restores the saved custom palette. */ }
   }
 }

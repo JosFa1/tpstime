@@ -2,6 +2,39 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import ThemeSwitcher from './ThemeSwitcher';
+import { thanksgiving } from '../theme/thanksgiving';
+
+test('the seasonal upgrade preserves saved custom palettes and their selection', () => {
+  localStorage.clear();
+  const themes = [{ id: 'my-theme', name: 'My personal theme', vars: { ...thanksgiving, 'color-primary': '#123456' } }];
+  localStorage.setItem('themeMode', 'custom');
+  localStorage.setItem('savedThemes', JSON.stringify(themes));
+  localStorage.setItem('selectedCustomThemeId', 'my-theme');
+  render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
+  expect(screen.getByRole('button', { name: 'Thanksgiving' })).toHaveAttribute('aria-pressed', 'true');
+  expect(JSON.parse(localStorage.getItem('savedThemes')!)).toEqual(themes);
+  expect(localStorage.getItem('selectedCustomThemeId')).toBe('my-theme');
+  fireEvent.click(screen.getByRole('button', { name: 'Custom' }));
+  expect(screen.getByLabelText('Theme Name')).toHaveValue('My personal theme');
+  expect(document.documentElement.style.getPropertyValue('--color-primary')).toBe('#123456');
+  expect(JSON.parse(localStorage.getItem('savedThemes')!)).toEqual(themes);
+});
+
+test('offers Thanksgiving first, applies it once, and remembers a different choice', () => {
+  localStorage.clear();
+  const view = render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
+  const modes = screen.getByLabelText('Theme mode');
+  expect(Array.from(modes.querySelectorAll('button')).map(button => button.textContent)).toEqual(['Thanksgiving', 'System', 'Light', 'Dark', 'Custom']);
+  expect(screen.getByRole('button', { name: 'Thanksgiving' })).toHaveAttribute('aria-pressed', 'true');
+  expect(document.documentElement.style.getPropertyValue('--color-background')).toBe('#24170f');
+  fireEvent.click(screen.getByRole('button', { name: 'Dark' }));
+  view.unmount();
+  render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
+  expect(screen.getByRole('button', { name: 'Dark' })).toHaveAttribute('aria-pressed', 'true');
+  expect(document.documentElement.style.getPropertyValue('--color-background')).toBe('');
+  fireEvent.click(screen.getByRole('button', { name: 'Thanksgiving' }));
+  expect(document.documentElement.style.getPropertyValue('--color-primary')).toBe('#f7b267');
+});
 
 test('offers enabled published themes and applies their actual colors', async () => {
   localStorage.clear();
@@ -24,6 +57,8 @@ test('offers enabled published themes and applies their actual colors', async ()
 
 test('derives supporting colors when main custom colors change and keeps error unchanged', async () => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
   const error = document.documentElement.style.getPropertyValue('--color-error');
   fireEvent.change(screen.getByLabelText('Primary'), { target: { value: '#123456' } });
@@ -39,6 +74,8 @@ test('derives supporting colors when main custom colors change and keeps error u
 
 test('derives muted text and borders for the supplied dark palette', async () => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
   fireEvent.change(screen.getByLabelText('Background'), { target: { value: '#121212' } });
   fireEvent.change(screen.getByLabelText('Surface'), { target: { value: '#1e1e1e' } });
@@ -49,6 +86,8 @@ test('derives muted text and borders for the supplied dark palette', async () =>
 
 test('keeps adaptive text readable on both light surfaces', async () => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
   fireEvent.change(screen.getByLabelText('Background'), { target: { value: '#ffffff' } });
   fireEvent.change(screen.getByLabelText('Surface'), { target: { value: '#f5f5f5' } });
@@ -58,6 +97,8 @@ test('keeps adaptive text readable on both light surfaces', async () => {
 
 test('selects a preset without duplicating it and exposes its selected state', () => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
   fireEvent.click(screen.getByText('More themes'));
   const nord = screen.getByRole('button', { name: 'Nord' });
@@ -74,6 +115,8 @@ test('selects a preset without duplicating it and exposes its selected state', (
 
 test('shows clear-all only inside advanced colors and respects confirmation', () => {
   localStorage.clear();
+  localStorage.setItem('tpstime-thanksgiving-2026', 'applied');
+  localStorage.setItem('themeMode', 'custom');
   render(<ThemeProvider><ThemeSwitcher /></ThemeProvider>);
   fireEvent.click(screen.getByRole('button', { name: 'Add' }));
   const count = JSON.parse(localStorage.getItem('savedThemes')!).length;

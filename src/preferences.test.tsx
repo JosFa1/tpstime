@@ -7,6 +7,26 @@ function Harness() {
   return <><label>Show mini timer<input type="checkbox" checked={prefs.showMiniTimer} onChange={e => setPrefs(p => ({ ...p, showMiniTimer: e.target.checked }))} /></label><label>Reduce motion<input type="checkbox" checked={prefs.reduceMotion} onChange={e => setPrefs(p => ({ ...p, reduceMotion: e.target.checked }))} /></label><input aria-label="Period 1 name" value={prefs.personalNames['1']} onChange={e => setPrefs(p => ({ ...p, personalNames: { ...p.personalNames, '1': e.target.value } }))} /><label>Dyslexia-friendly font<input type="checkbox" checked={prefs.dyslexicFont} onChange={e => setPrefs(p => ({ ...p, dyslexicFont: e.target.checked }))} /></label><button onClick={() => setPrefs(p => ({ ...p, personalNames: { ...p.personalNames, '1': 'Biology' } }))}>Save</button></>;
 }
 
+it('adds clock spacing to existing preferences without resetting names or display choices', () => {
+  const existing = {
+    personalNames: { '1': 'Biology', '2': 'Literature', '3': 'Calculus', '4': 'History', '5': 'Spanish', '6': 'Art', '7': 'Robotics' },
+    timeFormat: '24h', showSeconds: false, showMiniTimer: false,
+    dyslexicFont: true, reduceMotion: true, defaultTab: 'schedule',
+  };
+  localStorage.setItem('tpstimePreferences', JSON.stringify(existing));
+  const view = render(<Harness />);
+  expect(JSON.parse(localStorage.getItem('tpstimePreferences')!)).toEqual({ ...existing, clockSpacing: 1 });
+  view.unmount();
+  render(<Harness />);
+  expect(JSON.parse(localStorage.getItem('tpstimePreferences')!)).toEqual({ ...existing, clockSpacing: 1 });
+});
+
+it.each([[undefined, 1], ['8', 1], [-2, 0], [20, 12], [8, 8]])('validates saved clock spacing %s as %s', (saved, expected) => {
+  localStorage.setItem('tpstimePreferences', JSON.stringify({ clockSpacing: saved }));
+  render(<Harness />);
+  expect(JSON.parse(localStorage.getItem('tpstimePreferences')!).clockSpacing).toBe(expected);
+});
+
 it('defaults to device motion settings and persists an explicit reduced-motion choice', () => {
   localStorage.setItem('tpstimePreferences', '{}');
   const { unmount } = render(<Harness />);

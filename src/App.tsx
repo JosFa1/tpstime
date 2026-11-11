@@ -25,6 +25,9 @@ function RouteBoundary({ children }: { children: React.ReactNode }) {
 function App() {
   const [preferences] = usePreferences();
   useEffect(() => {
+    document.documentElement.style.setProperty('--clock-spacing', `${preferences.clockSpacing / 100}em`);
+  }, [preferences.clockSpacing]);
+  useEffect(() => {
     document.documentElement.toggleAttribute('data-dyslexic-font', preferences.dyslexicFont);
   }, [preferences.dyslexicFont]);
   useEffect(() => {

@@ -30,27 +30,31 @@
 .home-progress div { height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--color-primary),var(--color-secondary),var(--color-accent),var(--color-primary)); transition: width .5s; }
 .timer-view { width: min(100%, 1150px); min-height: 75vh; margin: 0 auto; padding: clamp(2rem, 8vh, 5.5rem) 1.5rem 2rem; display: flex; flex-direction: column; align-items: center; }
 .timer-view > div:first-child:not(.timer-clock) { width: 100%; }
-.timer-content { width: fit-content; max-width: 100%; }
-.timer-content:not(:has(.timer-digits)) { width: min(100%, 700px); }
-.timer-clock { width: fit-content; max-width: 100%; margin: clamp(1rem, 5vh, 3rem) auto clamp(1.5rem, 7vh, 5rem); }
-.timer-digits { margin: 0; color: var(--home-gold); font-family: var(--font-sans); font-size: clamp(5rem, 19vw, 19rem); font-weight: 750; line-height: .95; letter-spacing: -.065em; text-align: center; font-variant-numeric: tabular-nums; }
-.timer-digits--long { font-size: clamp(3.2rem, 15vw, 17rem); }
+.timer-content { width: 100%; min-width: 0; }
+.timer-description { height: 3em; flex: none; align-items: center; font-size: clamp(1.125rem, 2.2vw, 1.5rem); }
+.timer-description p { margin: 0; font-size: inherit; line-height: 1.5; overflow-wrap: anywhere; }
+.timer-clock { display: flex; align-items: center; justify-content: center; width: 100%; height: calc(clamp(5rem, 19vw, 19rem) * .95); margin: clamp(1rem, 5vh, 3rem) auto clamp(1.5rem, 7vh, 5rem); }
+.timer-digits { margin: 0; color: var(--home-gold); font-family: var(--font-sans); font-size: clamp(5rem, 19vw, 19rem); font-weight: 750; line-height: .95; letter-spacing: var(--clock-spacing, .01em); text-align: center; text-indent: var(--clock-spacing, .01em); font-variant-numeric: tabular-nums; }
+.timer-digits--long { font-size: clamp(2.5rem, 13vw, 14rem); }
 .home-shell .text-primary { color: var(--home-gold); }
 .home-shell .text-secondary, .home-shell .text-text-secondary { color: var(--color-text-secondary); }
 .schedule-list { width: 100%; margin: 0 auto; }
-.timer-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; width: min(120%, calc(100vw - 3rem)); margin-left: 50%; transform: translateX(-50%); }
-.timer-summary > div { display: flex; justify-content: flex-start; align-items: center; min-width: 0; padding: .35rem clamp(1rem, 3vw, 3rem); }
+.timer-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; width: min(100%, 960px); margin: 0 auto; }
+.timer-summary > div { display: flex; justify-content: flex-start; align-items: flex-start; min-width: 0; min-height: 6rem; padding: .35rem clamp(1rem, 3vw, 3rem); }
 .timer-summary > div:first-child { justify-content: flex-end; }
 .timer-summary-time { border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
-.timer-summary > div > span { min-width: 0; text-align: left; }
+.timer-summary > div > span { width: 100%; min-width: 0; text-align: left; }
+.timer-summary > div:first-child > span { text-align: right; }
+.timer-summary > .timer-summary-time > span { text-align: center; }
 .timer-summary > div:last-child { border-right: 0; }
 .timer-summary small, .timer-summary strong { display: block; }
 .timer-summary small { margin-bottom: .45rem; color: var(--color-text-secondary); font-size: .85rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.timer-summary strong { color: var(--color-text); font-size: clamp(1rem, 1.7vw, 1.8rem); font-weight: 400; overflow-wrap: anywhere; }
+.timer-summary strong { color: var(--color-text); font-size: clamp(1rem, 1.7vw, 1.8rem); font-weight: 400; white-space: nowrap; }
+.timer-summary strong > span { display: inline-block; }
 .home-shell--hay .timer-summary small { color: #c9c7e0; }
 .home-shell--hay .timer-summary strong { color: #f3f1ff; }
-.timer-summary-time strong { font-size: clamp(1rem, 1.4vw, 1.5rem); white-space: nowrap; }
-.timer-next-time { display: inline-block; margin-left: 1.5rem; font-size: .8em; }
+.timer-summary-time strong { font-size: clamp(1rem, 1.4vw, 1.5rem); }
+.timer-next-time { display: inline-block; margin-left: .75em; font-size: .8em; }
 .schedule-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .5rem 0; color: var(--color-text-secondary); font-size: clamp(1.125rem, 4vw, 3rem); }
 .schedule-row.current, .schedule-row.next { color: var(--home-gold); font-weight: 700; }
 .schedule-period { min-width: 0; overflow-wrap: anywhere; }
@@ -76,10 +80,9 @@ html[data-dyslexic-font] .schedule-row { font-size: clamp(1.125rem, 2.5vw, 2rem)
   .timer-content, .timer-clock { width: 100%; }
   .timer-clock { margin: 2rem 0; }
   .timer-summary { grid-template-columns: 1fr; width: 100%; margin-left: 0; transform: none; }
-  .timer-summary > div { justify-content: flex-start; padding: .65rem 0; border: 0; border-bottom: 1px solid var(--color-border); }
+  .timer-summary > div { justify-content: flex-start; min-height: 5rem; padding: .65rem 0; border: 0; border-bottom: 1px solid var(--color-border); }
   .timer-summary > div:first-child, .timer-summary > .timer-summary-time { justify-content: flex-start; }
-  .timer-summary > div > span { text-align: left; }
-  .timer-summary-time strong { white-space: normal; }
+  .timer-summary > div > span, .timer-summary > div:first-child > span, .timer-summary > .timer-summary-time > span { text-align: left; }
   .timer-summary > div:last-child { border-bottom: 0; }
   .schedule-row { font-size: 1.125rem; }
 }
@@ -96,3 +99,5 @@ html[data-dyslexic-font] .schedule-row { font-size: clamp(1.125rem, 2.5vw, 2rem)
   .home-tab:first-child { flex: .75; }
   .home-tab:last-child { flex: 1.4; }
 }
+
+html[data-dyslexic-font] .timer-digits--long { font-size: clamp(2.5rem, 11vw, 11rem); }

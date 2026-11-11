@@ -1,8 +1,9 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from 'react';
+import { readThemeMode, thanksgiving } from '../theme/thanksgiving';
 
 // Theme mode for the app
-export type ThemeMode = 'dark' | 'system' | 'light' | 'custom';
+export type ThemeMode = 'thanksgiving' | 'system' | 'light' | 'dark' | 'custom';
 
 // Keys for CSS variables that define theme
 export type ThemeVarKey =
@@ -212,10 +213,7 @@ function clearInlineVars() {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Load from storage
-  const [mode, setModeState] = useState<ThemeMode>(() => {
-    const saved = (localStorage.getItem(LS_KEYS.MODE) as ThemeMode) || 'custom';
-    return saved;
-  });
+  const [mode, setModeState] = useState<ThemeMode>(readThemeMode);
 
   const [savedThemes, setSavedThemes] = useState<CustomTheme[]>(() => {
     try {
@@ -234,6 +232,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   // Derived current vars based on mode
   const currentVars: ThemeVars = useMemo(() => {
+    if (mode === 'thanksgiving') return thanksgiving;
     if (mode === 'light') return lightBase;
     if (mode === 'dark') return darkBase;
     if (mode === 'system') {
@@ -281,8 +280,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         mq.removeEventListener ? mq.removeEventListener('change', handler) : mq.removeListener(handler as any);
       };
     } else {
-      // custom
-      root.setAttribute('data-theme', 'custom');
+      root.setAttribute('data-theme', mode);
       applyVars(currentVars);
     }
   }, [mode, currentVars, selectedCustomTheme?.id]);

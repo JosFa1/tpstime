@@ -55,6 +55,12 @@ function Settings() {
             <section id="settings-category-2" hidden={category !== 'Display'} className="settings-section settings-preferences">
               <div className="settings-section-heading"><h2>Display</h2></div>
               <label className="settings-row">Default tab <span className="settings-select"><select value={prefs.defaultTab} onChange={e => setPrefs(p => ({ ...p, defaultTab: e.target.value as typeof p.defaultTab }))}><option value="timer">Timer</option><option value="schedule">Schedule</option><option value="lightning">Lightning Alert</option></select><ChevronDown size={18} aria-hidden="true" /></span></label>
+              <div className="clock-spacing-control">
+                <label className="settings-row" htmlFor="clock-spacing">Clock text spacing <output htmlFor="clock-spacing">{prefs.clockSpacing}%</output></label>
+                <input id="clock-spacing" type="range" min="0" max="12" step="1" value={prefs.clockSpacing} aria-describedby="clock-spacing-help" aria-valuetext={`${prefs.clockSpacing}%`} onChange={e => setPrefs(p => ({ ...p, clockSpacing: Number(e.target.value) }))} />
+                <p id="clock-spacing-help" className="settings-note">Adjust the space between timer digits. Saved automatically.</p>
+                <div className="clock-spacing-preview" aria-label="Clock spacing preview" style={{ letterSpacing: `${prefs.clockSpacing / 100}em` }}>12:34:56</div>
+              </div>
               <label className="settings-row">Show mini timer <input type="checkbox" checked={prefs.showMiniTimer} onChange={e => setPrefs(p => ({ ...p, showMiniTimer: e.target.checked }))} /></label>
               <label className="settings-row">Show progress bar <input type="checkbox" checked={showProgressBar} onChange={e => setShowProgressBar(e.target.checked)} /></label>
               <details className="settings-disclosure" onToggle={revealExpandedDetails}>

@@ -4,6 +4,7 @@ export type Preferences = {
   personalNames: Record<string, string>;
   timeFormat: '12h' | '24h';
   showSeconds: boolean;
+  clockSpacing: number;
   showMiniTimer: boolean;
   dyslexicFont: boolean;
   reduceMotion: boolean;
@@ -11,7 +12,7 @@ export type Preferences = {
 };
 
 const KEY = 'tpstimePreferences';
-const defaults: Preferences = { personalNames: Object.fromEntries(['1','2','3','4','5','6','7'].map(p => [p, ''])), timeFormat: '12h', showSeconds: true, showMiniTimer: true, dyslexicFont: false, reduceMotion: false, defaultTab: 'timer' };
+const defaults: Preferences = { personalNames: Object.fromEntries(['1','2','3','4','5','6','7'].map(p => [p, ''])), timeFormat: '12h', showSeconds: true, clockSpacing: 1, showMiniTimer: true, dyslexicFont: false, reduceMotion: false, defaultTab: 'timer' };
 
 function read(): Preferences {
   try {
@@ -19,7 +20,7 @@ function read(): Preferences {
     const names = value.personalNames && typeof value.personalNames === 'object' && !Array.isArray(value.personalNames) ? value.personalNames : {};
     const personalNames = { ...defaults.personalNames };
     for (const period of Object.keys(personalNames)) personalNames[period] = typeof names[period] === 'string' ? names[period].slice(0, 40) : '';
-    return { personalNames, timeFormat: value.timeFormat === '24h' ? '24h' : '12h', showSeconds: typeof value.showSeconds === 'boolean' ? value.showSeconds : true, showMiniTimer: value.showMiniTimer !== false, dyslexicFont: value.dyslexicFont === true, reduceMotion: value.reduceMotion === true, defaultTab: ['timer','schedule','lightning'].includes(value.defaultTab) ? value.defaultTab : 'timer' };
+    return { personalNames, clockSpacing: typeof value.clockSpacing === 'number' && Number.isFinite(value.clockSpacing) ? Math.max(0, Math.min(12, value.clockSpacing)) : defaults.clockSpacing, timeFormat: value.timeFormat === '24h' ? '24h' : '12h', showSeconds: typeof value.showSeconds === 'boolean' ? value.showSeconds : true, showMiniTimer: value.showMiniTimer !== false, dyslexicFont: value.dyslexicFont === true, reduceMotion: value.reduceMotion === true, defaultTab: ['timer','schedule','lightning'].includes(value.defaultTab) ? value.defaultTab : 'timer' };
   } catch { return defaults; }
 }
 
